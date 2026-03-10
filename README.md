@@ -1,6 +1,6 @@
-# Email Split Test
+# Web App Template
 
-A Next.js + Firebase web application for email split testing.
+A Next.js + Firebase web application template.
 
 ## Tech Stack
 
@@ -20,8 +20,8 @@ A Next.js + Firebase web application for email split testing.
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/fujikazuki/email-split-test.git
-   cd email-split-test
+   git clone https://github.com/flightkaz/webapp-template.git
+   cd webapp-template
    ```
 
 2. Install dependencies:

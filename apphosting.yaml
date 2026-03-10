@@ -19,10 +19,10 @@ env:
   # APP CONFIGURATION
   # ============================================
   - variable: NEXT_PUBLIC_APP_NAME
-    value: "Email Split Test"
+    value: "Web App Template"
 
   - variable: NEXT_PUBLIC_APP_DESCRIPTION
-    value: "Email split testing application"
+    value: "A Next.js + Firebase web application template"
 
   - variable: NEXT_PUBLIC_APP_URL
     value: https://YOUR_DOMAIN
