@@ -1,0 +1,428 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "tw-animate-css";
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+  /* Modern 2026 font variables */
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+@layer base {
+  * {
+    @apply outline-none;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* NETMODA-inspired Theme Variables */
+:root[data-theme="light"] {
+  --cyber-bg: #ffffff;
+  --cyber-surface: #ffffff;
+  --cyber-surface-alt: #f8f8f8;
+  --cyber-text: #0a0a0a;
+  --cyber-text-muted: #4a4a4a;
+  --cyber-accent: #dc2626;
+  --cyber-accent-glow: rgba(220, 38, 38, 0.2);
+  --cyber-secondary: #dc2626;
+  --cyber-secondary-glow: rgba(220, 38, 38, 0.15);
+  --cyber-border: #e5e5e5;
+  --cyber-border-glow: rgba(220, 38, 38, 0.3);
+  --cyber-shadow: rgba(0, 0, 0, 0.08);
+  --cyber-grid: rgba(0, 0, 0, 0.05);
+  --cyber-overlay: rgba(0, 0, 0, 0.03);
+}
+
+:root[data-theme="dark"] {
+  --cyber-bg: #0a0a0a;
+  --cyber-surface: #1a1a1a;
+  --cyber-surface-alt: #252525;
+  --cyber-text: #ffffff;
+  --cyber-text-muted: #a3a3a3;
+  --cyber-accent: #dc2626;
+  --cyber-accent-glow: rgba(220, 38, 38, 0.4);
+  --cyber-secondary: #dc2626;
+  --cyber-secondary-glow: rgba(220, 38, 38, 0.3);
+  --cyber-border: #2a2a2a;
+  --cyber-border-glow: rgba(220, 38, 38, 0.4);
+  --cyber-shadow: rgba(0, 0, 0, 0.3);
+  --cyber-grid: rgba(255, 255, 255, 0.05);
+  --cyber-overlay: rgba(255, 255, 255, 0.02);
+}
+
+/* Cyberpunk Utility Classes */
+@layer utilities {
+  .cyber-glow {
+    box-shadow: 0 4px 12px var(--cyber-shadow);
+  }
+  
+  .cyber-glow-secondary {
+    box-shadow: 0 4px 12px var(--cyber-shadow);
+  }
+  
+  .cyber-border-glow {
+    border: 1px solid var(--cyber-border);
+    box-shadow: 0 2px 8px var(--cyber-shadow);
+  }
+  
+  .cyber-text-glow {
+    text-shadow: none;
+    font-weight: 700;
+  }
+  
+  .cyber-accent-border {
+    border-left: 3px solid var(--cyber-accent);
+  }
+  
+  .cyber-panel {
+    background: var(--cyber-surface);
+    border: 1px solid var(--cyber-border);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .cyber-grid-bg {
+    background-image: 
+      linear-gradient(var(--cyber-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--cyber-grid) 1px, transparent 1px);
+    background-size: 40px 40px;
+    position: relative;
+  }
+  
+  .cyber-grid-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 39px,
+        var(--cyber-overlay) 39px,
+        var(--cyber-overlay) 40px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 39px,
+        var(--cyber-overlay) 39px,
+        var(--cyber-overlay) 40px
+      );
+    pointer-events: none;
+  }
+  
+  .cyber-geometric-overlay {
+    position: relative;
+  }
+  
+  .cyber-geometric-overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+      repeating-linear-gradient(45deg, transparent, transparent 10px, var(--cyber-overlay) 10px, var(--cyber-overlay) 11px),
+      repeating-linear-gradient(-45deg, transparent, transparent 10px, var(--cyber-overlay) 10px, var(--cyber-overlay) 11px);
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  
+  /* Clean geometric shapes */
+  .cyber-shape-hexagon {
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+  
+  .cyber-shape-diagonal {
+    clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);
+  }
+  
+  .cyber-shape-angled {
+    clip-path: polygon(0 0, 100% 0, 99.5% 100%, 0.5% 100%);
+  }
+  
+  .cyber-shape-clean {
+    clip-path: none;
+    border-radius: 0;
+  }
+  
+  /* Clean panel with red accent border */
+  .cyber-panel-glow {
+    position: relative;
+    border: 1px solid var(--cyber-border);
+  }
+  
+  .cyber-panel-glow::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--cyber-accent);
+  }
+  
+  /* Hexagon with subtle border */
+  .cyber-hexagon-glow {
+    position: relative;
+    border: 1px solid var(--cyber-border);
+  }
+  
+  /* Angled panel with red accent */
+  .cyber-angled-glow {
+    position: relative;
+    border: 1px solid var(--cyber-border);
+  }
+  
+  .cyber-angled-glow::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--cyber-accent);
+  }
+  
+  /* Red accent bar */
+  .cyber-accent-bar {
+    background: var(--cyber-accent);
+    color: white;
+    padding: 0.5rem 0;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .cyber-accent-bar::before {
+    content: 'WELCOME + ';
+    position: absolute;
+    white-space: nowrap;
+    animation: scroll-text 20s linear infinite;
+  }
+  
+  @keyframes scroll-text {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  
+  /* Infinite scroll animation for stock ticker */
+  @keyframes scroll-ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-33.333%); }
+  }
+  
+  .animate-scroll {
+    animation: scroll-ticker 120s linear infinite;
+    will-change: transform;
+  }
+  
+  /* Cyber Fashion Utility Classes */
+  .cyber-card {
+    @apply bg-cyber-panel border border-cyber-line rounded-2xl shadow-cyber-soft;
+  }
+  
+  .cyber-label {
+    @apply text-[11px] uppercase tracking-wider font-semibold text-cyber-muted;
+  }
+  
+  .cyber-chip {
+    @apply rounded-chip px-3 py-1.5 text-xs font-semibold;
+  }
+  
+  .cyber-section-title {
+    @apply text-xl font-black uppercase tracking-wide text-cyber-dark;
+  }
+  
+  /* Micro grid pattern */
+  .cyber-micro-grid {
+    background-image: 
+      repeating-linear-gradient(0deg, transparent, transparent 9px, rgba(0,0,0,0.02) 9px, rgba(0,0,0,0.02) 10px),
+      repeating-linear-gradient(90deg, transparent, transparent 9px, rgba(0,0,0,0.02) 9px, rgba(0,0,0,0.02) 10px);
+  }
+  
+  /* Diagonal pattern overlay */
+  .cyber-diagonal-overlay {
+    background-image: 
+      repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(124,92,255,0.03) 10px, rgba(124,92,255,0.03) 11px),
+      repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(255,45,107,0.03) 10px, rgba(255,45,107,0.03) 11px);
+  }
+}
+
+/* Custom styles for the landing page */
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+.font-sans {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.mix-blend-multiply {
+  mix-blend-mode: multiply;
+}
+
+.backdrop-blur-custom {
+  backdrop-filter: blur(8.25px);
+}
+
+/* Lightweight animations */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Optimize animations for performance */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* TipTap Rich Text Editor Styles */
+.ProseMirror {
+  outline: none;
+  padding: 12px;
+  min-height: 200px;
+}
+
+.ProseMirror p {
+  margin: 0.5em 0;
+}
+
+.ProseMirror p:first-child {
+  margin-top: 0;
+}
+
+.ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+
+.ProseMirror li {
+  margin: 0.25em 0;
+}
+
+.ProseMirror strong {
+  font-weight: 600;
+}
+
+.ProseMirror em {
+  font-style: italic;
+}
+
+.ProseMirror:focus {
+  outline: none;
+}
+
+.ProseMirror[contenteditable="false"] {
+  cursor: default;
+}
