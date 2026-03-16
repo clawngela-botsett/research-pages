@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useState, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { signInWithGoogle } from "@/lib/firebase/auth"
@@ -46,6 +47,20 @@ function HomePageContent() {
           <p className="text-gray-600">
             {appDescription}
           </p>
+        </div>
+
+        <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 text-left">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">New in this repo</p>
+          <h2 className="mt-2 text-lg font-semibold text-black">Steven Bartlett stylist research page</h2>
+          <p className="mt-2 text-sm text-gray-600">
+            A polished in-app memo with the original shortlist, added stylist base locations, and US-based options sorted first.
+          </p>
+          <Link
+            href="/research/steven-bartlett-stylists"
+            className="mt-4 inline-flex items-center justify-center rounded-full border border-black px-4 py-2 text-sm font-medium text-black hover:bg-black hover:text-white"
+          >
+            Open research page
+          </Link>
         </div>
 
         {/* Google Sign-In Button */}

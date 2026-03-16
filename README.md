@@ -53,6 +53,11 @@ A Next.js + Firebase web application template.
    npm run dev
    ```
 
+8. Open the Steven Bartlett stylist research page:
+   ```
+   http://localhost:3000/research/steven-bartlett-stylists
+   ```
+
 ## Project Structure
 
 ```
