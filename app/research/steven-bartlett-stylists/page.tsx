@@ -173,8 +173,7 @@ const stylists: Stylist[] = [
       { label: "Website", href: "https://www.waymanandmicah.com/" },
       { label: "Instagram", href: "https://www.instagram.com/waymanandmicah/" },
     ],
-    knownFor:
-      "Colman Domingo, Danny Ramirez, Da'Vinchi, Jharrel Jerome",
+    knownFor: "Colman Domingo, Danny Ramirez, Da'Vinchi, Jharrel Jerome",
     summary:
       "Their work has more swing and theater than Bartlett usually wears day to day, but the tailoring standards are excellent and the image-making is memorable.",
     bestFor:
@@ -326,9 +325,9 @@ const sortedStylists = [...stylists].sort((a, b) => {
 })
 
 const fitStyles = {
-  strong: "bg-emerald-100 text-emerald-900 border-emerald-200",
-  good: "bg-sky-100 text-sky-900 border-sky-200",
-  wildcard: "bg-amber-100 text-amber-900 border-amber-200",
+  strong: "border-emerald-400/30 bg-emerald-400/10 text-emerald-100",
+  good: "border-sky-400/30 bg-sky-400/10 text-sky-100",
+  wildcard: "border-amber-400/30 bg-amber-400/10 text-amber-100",
 }
 
 const sources = [
@@ -346,188 +345,284 @@ const sources = [
   { label: "Batch LDN — Steven Bartlett wears Batch suits", href: "https://batchldn.com/blogs/news/steven-bartlett-wears-batch-suits" },
 ]
 
+const topThree = sortedStylists.slice(0, 3)
+const heroGallery = topThree.flatMap((stylist) => stylist.examples.slice(0, 1))
+const stylePillars = [
+  {
+    title: "Luxury without costume",
+    body: "The sweet spot is successful, intentional, and camera-ready — never banker-uniform, never fashion-stunt dressing.",
+  },
+  {
+    title: "Texture over trend",
+    body: "Suede, brushed wool, open-collar knits, and softened tailoring do more work here than loud pattern or novelty.",
+  },
+  {
+    title: "Built for a founder schedule",
+    body: "Podcast chairs, stage moments, portrait shoots, and travel all need a repeatable silhouette that still looks premium in motion.",
+  },
+]
+
 export default function StevenBartlettStylistsPage() {
   const usCount = sortedStylists.filter((stylist) => stylist.region === "US").length
   const ukCount = sortedStylists.filter((stylist) => stylist.region === "UK").length
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(29,39,53,0.95)_0%,_#0b0d10_45%)] text-slate-100">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
-        <section className="overflow-hidden rounded-[28px] border border-slate-800/90 bg-slate-950/75 shadow-2xl shadow-black/20">
-          <div className="border-b border-slate-800/80 bg-gradient-to-r from-sky-400/10 via-transparent to-emerald-300/10 px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.32em] text-emerald-200 sm:px-8">
-            Research memo / stylist directory
-          </div>
-          <div className="grid gap-8 px-6 py-8 sm:px-8 lg:grid-cols-[1.35fr_0.85fr] lg:gap-10 lg:py-10">
-            <div>
-              <h1 className="max-w-4xl text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
-                Steven Bartlett stylist market map
-              </h1>
-              <p className="mt-5 max-w-3xl text-base leading-7 text-slate-300 sm:text-lg">
-                An expanded, app-native shortlist built for real outreach: more names, both US and UK coverage,
-                public-facing representation only, and quick visual examples of male clients each stylist has dressed.
-                The north star is unchanged: premium, relaxed menswear that looks intentional on camera without becoming
-                boardroom cosplay.
-              </p>
-              <div className="mt-6 flex flex-wrap gap-3 text-sm text-slate-200">
-                <span className="rounded-full border border-slate-700 bg-slate-900/90 px-3 py-1.5">US + UK shortlist</span>
-                <span className="rounded-full border border-slate-700 bg-slate-900/90 px-3 py-1.5">Public contact pathways only</span>
-                <span className="rounded-full border border-slate-700 bg-slate-900/90 px-3 py-1.5">Celebrity examples built in</span>
+    <main className="min-h-screen bg-[#07090c] text-stone-100">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(169,125,67,0.22),_transparent_30%),radial-gradient(circle_at_80%_20%,_rgba(83,112,255,0.14),_transparent_24%),linear-gradient(180deg,_#0b0d11_0%,_#07090c_60%,_#050608_100%)]" />
+      <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
+        <section className="overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.04] shadow-[0_30px_120px_rgba(0,0,0,0.45)] backdrop-blur-sm">
+          <div className="grid gap-0 xl:grid-cols-[1.08fr_0.92fr]">
+            <div className="flex flex-col justify-between p-7 sm:p-10 lg:p-12">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-amber-200/80">
+                  Research memo / editorial shortlist
+                </p>
+                <h1 className="mt-5 max-w-4xl text-5xl font-semibold tracking-[-0.04em] text-white sm:text-6xl lg:text-7xl">
+                  Steven Bartlett stylist market map
+                </h1>
+                <p className="mt-6 max-w-3xl text-base leading-7 text-stone-300 sm:text-lg">
+                  An expanded US/UK shortlist built for real outreach: public-facing contact routes, premium menswear fit,
+                  and immediate visual references for the kind of image each stylist can build. The north star is still
+                  founder polish with softness — expensive, controlled, and camera-literate without drifting into boardroom cosplay.
+                </p>
+              </div>
+
+              <div className="mt-8 grid gap-4 sm:grid-cols-3">
+                <div className="rounded-[24px] border border-white/10 bg-black/20 p-5">
+                  <p className="text-[11px] uppercase tracking-[0.28em] text-stone-400">Coverage</p>
+                  <p className="mt-3 text-4xl font-semibold text-white">{sortedStylists.length}</p>
+                  <p className="mt-2 text-sm leading-6 text-stone-400">{usCount} US-based + {ukCount} UK-based names.</p>
+                </div>
+                <div className="rounded-[24px] border border-white/10 bg-black/20 p-5">
+                  <p className="text-[11px] uppercase tracking-[0.28em] text-stone-400">Best shorthand</p>
+                  <p className="mt-3 text-sm leading-6 text-stone-300">
+                    Soft tailoring, luxury basics, dark palettes, and stronger texture before louder trend moves.
+                  </p>
+                </div>
+                <div className="rounded-[24px] border border-white/10 bg-black/20 p-5">
+                  <p className="text-[11px] uppercase tracking-[0.28em] text-stone-400">Top read</p>
+                  <p className="mt-3 text-sm leading-6 text-stone-300">
+                    Urbinati first, Baker second, Yang third — with Bolden as the media-gloss alternative.
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5">
-                <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Coverage</p>
-                <p className="mt-2 text-3xl font-semibold text-white">{sortedStylists.length}</p>
-                <p className="mt-2 text-sm leading-6 text-slate-400">{usCount} US-based and {ukCount} UK-based options, with US listed first.</p>
-              </div>
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5">
-                <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Best shorthand</p>
-                <p className="mt-2 text-sm leading-6 text-slate-300">Luxury basics over hard-power dressing; soft tailoring, rich texture, dark palette, and founder polish.</p>
-              </div>
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5">
-                <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Top three</p>
-                <p className="mt-2 text-sm leading-6 text-slate-300">Ilaria Urbinati, Warren Alfie Baker, Jeanne Yang — with Jason Bolden as the stronger media-gloss alternative.</p>
-              </div>
+            <div className="grid min-h-[520px] gap-3 border-t border-white/10 bg-gradient-to-br from-white/[0.03] to-transparent p-3 sm:grid-cols-2 xl:min-h-full xl:border-l xl:border-t-0">
+              {heroGallery.map((example, index) => (
+                <a
+                  key={`${example.celebrity}-${index}`}
+                  href={example.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`group relative overflow-hidden rounded-[28px] border border-white/10 ${index === 0 ? "sm:col-span-2" : ""}`}
+                >
+                  <div
+                    className={`absolute inset-0 bg-cover bg-center transition duration-500 group-hover:scale-[1.04] ${index === 0 ? "min-h-[280px]" : "min-h-[220px]"}`}
+                    style={{
+                      backgroundImage: `linear-gradient(180deg, rgba(7,9,12,0.08) 0%, rgba(7,9,12,0.35) 48%, rgba(7,9,12,0.88) 100%), url(${example.image})`,
+                    }}
+                  />
+                  <div className={`relative flex h-full min-h-[220px] flex-col justify-end p-5 ${index === 0 ? "sm:min-h-[280px]" : ""}`}>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-stone-300/80">Client reference</p>
+                    <p className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-white">{example.celebrity}</p>
+                    <p className="mt-2 max-w-md text-sm leading-6 text-stone-200">{example.note}</p>
+                  </div>
+                </a>
+              ))}
             </div>
           </div>
         </section>
 
-        <section className="grid gap-5 lg:grid-cols-[0.92fr_1.08fr]">
-          <article className="rounded-[24px] border border-slate-800 bg-slate-950/80 p-6 shadow-xl shadow-black/15 sm:p-7">
-            <h2 className="text-2xl font-semibold text-white">Steven Bartlett fit criteria</h2>
-            <div className="mt-5 grid gap-5 xl:grid-cols-2">
+        <section className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+          <article className="rounded-[30px] border border-white/10 bg-white/[0.04] p-7 backdrop-blur-sm sm:p-8">
+            <div className="flex items-end justify-between gap-4">
               <div>
-                <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-200">What works</h3>
-                <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-300">
-                  <li><strong className="text-slate-100">Dark repeatable foundation:</strong> black, charcoal, deep navy, petrol, chocolate.</li>
-                  <li><strong className="text-slate-100">Relaxed authority:</strong> tailoring that signals success without reading generic-finance.</li>
-                  <li><strong className="text-slate-100">Texture over noise:</strong> suede, brushed wool, premium knitwear, softened structure.</li>
-                  <li><strong className="text-slate-100">Camera fluency:</strong> clean lines for podcasts, stage, founder portraits, and press tours.</li>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-stone-400">Fit criteria</p>
+                <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-white">What the wardrobe should feel like</h2>
+              </div>
+            </div>
+
+            <div className="mt-6 space-y-4">
+              {stylePillars.map((pillar) => (
+                <div key={pillar.title} className="rounded-[24px] border border-white/10 bg-black/20 p-5">
+                  <h3 className="text-lg font-semibold text-white">{pillar.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-stone-300">{pillar.body}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <div className="rounded-[24px] border border-emerald-400/20 bg-emerald-400/10 p-5">
+                <h3 className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-100">What works</h3>
+                <ul className="mt-4 space-y-3 text-sm leading-6 text-stone-200">
+                  <li><strong className="text-white">Dark repeatable foundation:</strong> black, charcoal, deep navy, petrol, chocolate.</li>
+                  <li><strong className="text-white">Relaxed authority:</strong> tailoring that signals success without reading generic-finance.</li>
+                  <li><strong className="text-white">Texture over noise:</strong> suede, brushed wool, premium knitwear, softened structure.</li>
+                  <li><strong className="text-white">Camera fluency:</strong> clean lines for podcasts, stage, founder portraits, and press tours.</li>
                 </ul>
               </div>
-              <div>
-                <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-200">What to avoid</h3>
-                <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-300">
+              <div className="rounded-[24px] border border-amber-400/20 bg-amber-400/10 p-5">
+                <h3 className="text-sm font-semibold uppercase tracking-[0.22em] text-amber-100">What to avoid</h3>
+                <ul className="mt-4 space-y-3 text-sm leading-6 text-stone-200">
                   <li>Overly corporate blue-suit uniformity.</li>
                   <li>Trend-chasing that overwhelms the wearer.</li>
                   <li>Too much stylist fingerprint and not enough client identity.</li>
                   <li>Red-carpet flash that does not translate to everyday founder dressing.</li>
                 </ul>
-                <div className="mt-5 rounded-2xl border border-slate-800 bg-slate-900/80 p-4 text-sm leading-6 text-slate-300">
-                  <strong className="text-white">Quick read:</strong> Steven sits closest to <em>elevated monochrome smart casual</em> with strategic tailoring. The best match is somebody who can sharpen proportion and fabric story without trapping him in a formal-business costume.
-                </div>
               </div>
+            </div>
+
+            <div className="mt-6 rounded-[24px] border border-white/10 bg-gradient-to-r from-white/10 to-white/[0.03] p-5 text-sm leading-6 text-stone-300">
+              <strong className="text-white">Quick read:</strong> Steven sits closest to <em>elevated monochrome smart casual</em>
+              with strategic tailoring. The best match is someone who can sharpen proportion and fabric story without trapping him in a formal-business costume.
             </div>
           </article>
 
-          <article className="rounded-[24px] border border-slate-800 bg-slate-950/80 p-6 shadow-xl shadow-black/15 sm:p-7">
+          <article className="rounded-[30px] border border-white/10 bg-white/[0.04] p-7 backdrop-blur-sm sm:p-8">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
-                <h2 className="text-2xl font-semibold text-white">Tyriq Withers check</h2>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
-                  Included because Juan specifically asked for it.
-                </p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-stone-400">Fast recommendation</p>
+                <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-white">Who rises to the top</h2>
               </div>
-              <Link
-                href="#sources"
-                className="rounded-full border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 hover:border-slate-500 hover:text-white"
-              >
+              <Link href="#sources" className="rounded-full border border-white/15 px-4 py-2 text-sm text-stone-200 transition hover:border-white/30 hover:text-white">
                 Jump to sources
               </Link>
             </div>
-            <div className="mt-5 rounded-3xl border border-amber-500/20 bg-amber-500/10 p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-200">Publicly knowable status</p>
-              <p className="mt-3 text-sm leading-6 text-slate-200">
-                I did not find a reliably attributable, public-facing stylist credit for Tyriq Withers in the sources reviewed for this page. Rather than inventing one, the safer call is to note that his dedicated stylist is <strong>not clearly public/confirmed in this research pass</strong>. If Juan wants, this can be extended later with a deeper trade-press or image-credit pass.
-              </p>
+
+            <div className="mt-6 grid gap-4 lg:grid-cols-3">
+              {topThree.map((stylist, index) => {
+                const lead = stylist.examples[0]
+                return (
+                  <a
+                    key={stylist.name}
+                    href={stylist.contact[0]?.href ?? lead.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group overflow-hidden rounded-[28px] border border-white/10 bg-black/25"
+                  >
+                    <div
+                      className="h-64 bg-cover bg-center transition duration-500 group-hover:scale-[1.03]"
+                      style={{
+                        backgroundImage: `linear-gradient(180deg, rgba(5,6,8,0.1) 0%, rgba(5,6,8,0.25) 45%, rgba(5,6,8,0.9) 100%), url(${lead.image})`,
+                      }}
+                    />
+                    <div className="p-5">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-stone-400">#{index + 1} recommendation</p>
+                      <h3 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-white">{stylist.name}</h3>
+                      <p className="mt-2 text-sm leading-6 text-stone-300">{stylist.summary}</p>
+                      <p className="mt-4 text-sm leading-6 text-stone-400"><span className="text-stone-200">Best for:</span> {stylist.bestFor}</p>
+                    </div>
+                  </a>
+                )
+              })}
             </div>
+
+            <article className="mt-6 rounded-[28px] border border-amber-400/20 bg-amber-400/10 p-6">
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-amber-100">Specific request</p>
+                  <h3 className="mt-2 text-2xl font-semibold text-white">Tyriq Withers check</h3>
+                </div>
+              </div>
+              <p className="mt-4 text-sm leading-6 text-stone-200">
+                Included because Juan specifically asked for it. I did not find a reliably attributable, public-facing stylist credit for Tyriq Withers in the sources reviewed for this page. Rather than inventing one, the safer call is to note that his dedicated stylist is <strong>not clearly public/confirmed in this research pass</strong>. If needed later, this can be extended with a deeper trade-press or image-credit pass.
+              </p>
+            </article>
           </article>
         </section>
 
-        <section className="rounded-[24px] border border-slate-800 bg-slate-950/80 p-6 shadow-xl shadow-black/15 sm:p-7">
+        <section className="rounded-[32px] border border-white/10 bg-white/[0.04] p-7 backdrop-blur-sm sm:p-8 lg:p-10">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-semibold text-white">Shortlist directory</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
-                Sorted US first, then UK. Every card includes base city, public representation where findable, professional contact pathways, and visual celebrity references.
+              <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-stone-400">Directory</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-white sm:text-4xl">Editorial shortlist</h2>
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-stone-400 sm:text-base">
+                Sorted US first, then UK. Every card keeps the original research intact — base city, public representation,
+                public contact pathways, and visual celebrity references — but the page now reads like a premium fashion memo instead of a plain list.
               </p>
             </div>
           </div>
 
-          <div className="mt-6 grid gap-4 xl:grid-cols-2">
+          <div className="mt-8 grid gap-6 2xl:grid-cols-2">
             {sortedStylists.map((stylist) => (
-              <article key={stylist.name} className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/80">
-                <div className="border-b border-slate-800/90 p-5">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                        <span>{stylist.region}</span>
-                        <span className="text-slate-600">•</span>
-                        <span>{stylist.based}</span>
-                      </div>
-                      <h3 className="mt-2 text-xl font-semibold text-white">{stylist.name}</h3>
-                    </div>
-                    <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${fitStyles[stylist.fitTone]}`}>
-                      {stylist.fit}
-                    </span>
-                  </div>
-
-                  <p className="mt-4 text-sm leading-6 text-slate-300">
-                    <strong className="text-slate-100">Known for:</strong> {stylist.knownFor}
-                  </p>
-                  <p className="mt-3 text-sm leading-6 text-slate-300">{stylist.summary}</p>
-                  <div className="mt-4 rounded-2xl border border-slate-800 bg-slate-950/70 p-4 text-sm leading-6 text-slate-300">
-                    <p><strong className="text-white">Best for:</strong> {stylist.bestFor}</p>
-                    <p className="mt-2"><strong className="text-white">Representation:</strong> {stylist.representation ?? "No public representation link confirmed."}</p>
-                  </div>
-
-                  <div className="mt-4 flex flex-wrap gap-3 text-sm">
-                    {stylist.contact.map((link) => (
+              <article key={stylist.name} className="overflow-hidden rounded-[30px] border border-white/10 bg-black/20 shadow-[0_10px_40px_rgba(0,0,0,0.2)]">
+                <div className="grid gap-0 lg:grid-cols-[0.94fr_1.06fr]">
+                  <div className="grid gap-3 border-b border-white/10 p-3 lg:border-b-0 lg:border-r">
+                    {stylist.examples.map((example) => (
                       <a
-                        key={link.href}
-                        href={link.href}
+                        key={`${stylist.name}-${example.celebrity}`}
+                        href={example.href}
                         target="_blank"
                         rel="noreferrer"
-                        className="rounded-full border border-slate-700 px-3 py-1.5 text-sky-300 hover:border-sky-400/60 hover:text-white"
+                        className="group relative overflow-hidden rounded-[24px] border border-white/10"
                       >
-                        {link.label}
+                        <div
+                          className="absolute inset-0 bg-cover bg-center transition duration-500 group-hover:scale-[1.04]"
+                          style={{
+                            backgroundImage: `linear-gradient(180deg, rgba(7,9,12,0.08) 0%, rgba(7,9,12,0.35) 52%, rgba(7,9,12,0.92) 100%), url(${example.image})`,
+                          }}
+                        />
+                        <div className="relative flex min-h-[240px] flex-col justify-end p-5">
+                          <p className="text-xl font-semibold tracking-[-0.03em] text-white">{example.celebrity}</p>
+                          <p className="mt-2 text-sm leading-6 text-stone-200">{example.note}</p>
+                        </div>
                       </a>
                     ))}
                   </div>
-                </div>
 
-                <div className="grid gap-3 p-5 sm:grid-cols-2">
-                  {stylist.examples.map((example) => (
-                    <a
-                      key={`${stylist.name}-${example.celebrity}`}
-                      href={example.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/80"
-                    >
-                      <div
-                        className="h-40 w-full bg-cover bg-center transition duration-300 group-hover:scale-[1.02]"
-                        style={{
-                          backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.72)), url(${example.image})`,
-                        }}
-                      />
-                      <div className="p-4">
-                        <p className="text-sm font-semibold text-white">{example.celebrity}</p>
-                        <p className="mt-1 text-sm leading-6 text-slate-400">{example.note}</p>
+                  <div className="p-6 sm:p-7">
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-stone-400">
+                          <span>{stylist.region}</span>
+                          <span className="text-stone-600">•</span>
+                          <span>{stylist.based}</span>
+                        </div>
+                        <h3 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-white">{stylist.name}</h3>
                       </div>
-                    </a>
-                  ))}
+                      <span className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${fitStyles[stylist.fitTone]}`}>
+                        {stylist.fit}
+                      </span>
+                    </div>
+
+                    <div className="mt-6 grid gap-4 text-sm leading-6 text-stone-300">
+                      <div className="rounded-[22px] border border-white/10 bg-white/[0.03] p-4">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-stone-500">Known for</p>
+                        <p className="mt-2 text-stone-200">{stylist.knownFor}</p>
+                      </div>
+                      <p>{stylist.summary}</p>
+                      <div className="rounded-[22px] border border-white/10 bg-gradient-to-r from-white/[0.06] to-white/[0.03] p-4">
+                        <p><strong className="text-white">Best for:</strong> {stylist.bestFor}</p>
+                        <p className="mt-3"><strong className="text-white">Representation:</strong> {stylist.representation ?? "No public representation link confirmed."}</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 flex flex-wrap gap-3 text-sm">
+                      {stylist.contact.map((link) => (
+                        <a
+                          key={link.href}
+                          href={link.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="rounded-full border border-white/15 px-4 py-2 text-stone-200 transition hover:border-sky-300/60 hover:bg-sky-300/10 hover:text-white"
+                        >
+                          {link.label}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </article>
             ))}
           </div>
         </section>
 
-        <section className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-          <article className="rounded-[24px] border border-slate-800 bg-slate-950/80 p-6 shadow-xl shadow-black/15 sm:p-7">
-            <h2 className="text-2xl font-semibold text-white">Fast recommendation</h2>
-            <ol className="mt-5 space-y-4 text-sm leading-6 text-slate-300">
+        <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+          <article className="rounded-[30px] border border-white/10 bg-white/[0.04] p-7 backdrop-blur-sm sm:p-8">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-stone-400">Recommendation stack</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-white">Fast decision order</h2>
+            <ol className="mt-6 space-y-4 text-sm leading-6 text-stone-300 sm:text-base">
               <li><strong className="text-white">1. Ilaria Urbinati</strong> — best direct match for elevated, relaxed menswear-first polish.</li>
               <li><strong className="text-white">2. Warren Alfie Baker</strong> — strongest if Steven wants younger, sharper tailoring without losing ease.</li>
               <li><strong className="text-white">3. Jeanne Yang</strong> — best for quiet luxury and mature confidence.</li>
@@ -535,18 +630,19 @@ export default function StevenBartlettStylistsPage() {
             </ol>
           </article>
 
-          <article id="sources" className="rounded-[24px] border border-slate-800 bg-slate-950/80 p-6 shadow-xl shadow-black/15 sm:p-7">
-            <h2 className="text-2xl font-semibold text-white">Research sources</h2>
-            <ul className="mt-5 space-y-3 text-sm leading-6 text-slate-300">
+          <article id="sources" className="rounded-[30px] border border-white/10 bg-white/[0.04] p-7 backdrop-blur-sm sm:p-8">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-stone-400">Sources</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-white">Research sources</h2>
+            <ul className="mt-6 grid gap-3 text-sm leading-6 text-stone-300 sm:grid-cols-2">
               {sources.map((source) => (
                 <li key={source.href}>
-                  <a className="text-sky-300 hover:text-white" href={source.href} target="_blank" rel="noreferrer">
+                  <a className="text-sky-300 transition hover:text-white" href={source.href} target="_blank" rel="noreferrer">
                     {source.label}
                   </a>
                 </li>
               ))}
             </ul>
-            <p className="mt-5 text-sm leading-6 text-slate-400">
+            <p className="mt-6 text-sm leading-6 text-stone-400">
               Notes: representation/contact entries are limited to public professional pathways only. Where a clean agency page was not confidently confirmable during this pass, the page says so instead of guessing.
             </p>
           </article>
