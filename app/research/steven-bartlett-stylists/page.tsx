@@ -34,6 +34,7 @@ type Stylist = {
 }
 
 const stylists: Stylist[] = [
+  // ── ESTABLISHED ──────────────────────────────────────────────────────────
   {
     name: "Ilaria Urbinati",
     fit: "Very strong fit",
@@ -45,25 +46,12 @@ const stylists: Stylist[] = [
       { label: "Agency profile", href: "https://thewallgroup.com/artist/ilaria-urbinati/" },
       { label: "Instagram", href: "https://www.instagram.com/ilariaurbinati/" },
     ],
-    knownFor:
-      "Donald Glover, Ryan Reynolds, Rami Malek, Chris Evans, Barry Keoghan, Dwayne Johnson",
-    summary:
-      "Still the clearest direct match. Urbinati consistently lands men in tailoring and knitwear that feel expensive, relaxed, and culturally current instead of banker-stiff.",
-    bestFor:
-      "Elevated monochrome, easy suiting, rich casualwear, and a modern entrepreneur silhouette that does not read costume-y.",
+    knownFor: "Donald Glover, Chris Evans, Ryan Reynolds, Barry Keoghan, Dwayne Johnson",
+    summary: "The clearest direct match. Urbinati's Instagram is a masterclass in awards-season dark tailoring — post after post in black, charcoal, and deep navy. Brand palette runs Dunhill, Ferragamo, Caruso Menswear, YSL, McQueen — European luxury with a confident LA edge. She captions warmly and personally, tagging every collaborator.",
+    bestFor: "Elevated monochrome, easy suiting, rich casualwear, and a modern entrepreneur silhouette that does not read costume-y.",
     examples: [
-      {
-        celebrity: "Donald Glover",
-        note: "Relaxed tailoring and retro-luxury menswear.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Donald%20Glover%20TIFF%202015.jpg",
-        href: "https://thewallgroup.com/artist/ilaria-urbinati/",
-      },
-      {
-        celebrity: "Ryan Reynolds",
-        note: "Clean red-carpet suiting with approachable polish.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Ryan%20Reynolds%20by%20Gage%20Skidmore.jpg",
-        href: "https://thewallgroup.com/artist/ilaria-urbinati/",
-      },
+      { celebrity: "Donald Glover", note: "Relaxed dark tailoring and retro-luxury menswear.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Donald%20Glover%20TIFF%202015.jpg", href: "https://www.instagram.com/ilariaurbinati/" },
+      { celebrity: "Barry Keoghan", note: "Award-season polish with personality.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Barry%20Keoghan%20Cannes%202023.jpg", href: "https://www.instagram.com/ilariaurbinati/" },
     ],
   },
   {
@@ -72,30 +60,36 @@ const stylists: Stylist[] = [
     fitTone: "strong",
     based: "Los Angeles, California, US",
     region: "US",
-    representation: "Public-facing professional presence via Instagram/editorial features; no agency page confidently confirmed in this pass.",
+    representation: "The Wall Group",
     contact: [
       { label: "Instagram", href: "https://www.instagram.com/warrenalfiebaker/" },
-      { label: "THR feature", href: "https://www.hollywoodreporter.com/lifestyle/shopping/best-mens-fall-fashion-trends-celebrity-stylists-2023-1235599097/" },
+      { label: "THR Power Stylists 2025", href: "https://www.hollywoodreporter.com/lists/hollywoods-25-most-powerful-stylists/" },
     ],
-    knownFor:
-      "Andrew Garfield, Glen Powell, Matt Bomer, Andrew Scott, Ben Affleck, Patrick Dempsey",
-    summary:
-      "Baker is strong when the brief is sharper tailoring without losing warmth. His work reads clean, expensive, and younger than classic Hollywood formalwear.",
-    bestFor:
-      "A crisper, more directional version of Bartlett’s current look, especially for events, shoots, and stage appearances.",
+    knownFor: "Andrew Garfield, Glen Powell, Leo DiCaprio (Esquire), Regé-Jean Page, Ben Affleck, Domhnall Gleeson, Patrick Dempsey",
+    summary: "Baker's sweet spot is the classic suit with a sharper, younger twist. Editorial coverage describes his work as refined but offbeat: monochrome tailoring, unexpected neckwear, retro track jackets, and modern red-carpet experimentation that still reads clean. Named to THR's Hollywood's 25 Most Powerful Stylists 2025.",
+    bestFor: "A crisper, more directional version of Bartlett's current look, especially for events, shoots, and stage appearances.",
     examples: [
-      {
-        celebrity: "Andrew Garfield",
-        note: "Soft-shouldered suiting and polished knit-led dressing.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Andrew%20Garfield%20by%20Gage%20Skidmore.jpg",
-        href: "https://www.hollywoodreporter.com/lifestyle/shopping/best-mens-fall-fashion-trends-celebrity-stylists-2023-1235599097/",
-      },
-      {
-        celebrity: "Glen Powell",
-        note: "Classic leading-man tailoring with a younger edge.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Glen%20Powell%20by%20Gage%20Skidmore.jpg",
-        href: "https://wwd.com/eye/people/mens-fashion-stylists-2024-awards-season-1236109146/",
-      },
+      { celebrity: "Andrew Garfield", note: "Soft-shouldered suiting and polished knit-led dressing.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Andrew%20Garfield%20by%20Gage%20Skidmore.jpg", href: "https://www.instagram.com/warrenalfiebaker/" },
+      { celebrity: "Glen Powell", note: "Classic leading-man tailoring with a younger edge.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Glen%20Powell%20by%20Gage%20Skidmore.jpg", href: "https://www.instagram.com/warrenalfiebaker/" },
+    ],
+  },
+  {
+    name: "Felicity Kay",
+    fit: "Strong fit",
+    fitTone: "strong",
+    based: "London, England, UK",
+    region: "UK",
+    representation: "Falcon Artists (@withfalcon)",
+    contact: [
+      { label: "Instagram", href: "https://www.instagram.com/felicitykay/" },
+      { label: "Falcon Artists", href: "https://www.instagram.com/withfalcon/" },
+    ],
+    knownFor: "Paul Mescal (Oscars, BAFTAs — Celine, Prada, Gucci, Cartier), Riz Ahmed, Ncuti Gatwa, Kit Connor, Fionn O'Shea",
+    summary: "London-based, Falcon Artists. British-cool understated luxury — European labels (Celine, Prada, Gucci, YSL) with a very clean, masculine-but-contemporary sensibility. Anti-corporate, quietly iconic. No logos, no noise. The Paul Mescal template: looks effortlessly refined without trying.",
+    bestFor: "UK press, editorial shoots, fashion shoots, British smart-casual — Bartlett's UK media calendar aligns perfectly.",
+    examples: [
+      { celebrity: "Paul Mescal", note: "Custom Celine and Cartier — relaxed formalwear with contemporary energy.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Paul%20Mescal%20at%20the%20Deauville%20American%20Film%20Festival%20in%202022.jpg", href: "https://www.instagram.com/felicitykay/" },
+      { celebrity: "Ncuti Gatwa", note: "Playful tailoring with crisp proportions.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Ncuti%20Gatwa%20by%20Gage%20Skidmore.jpg", href: "https://www.instagram.com/felicitykay/" },
     ],
   },
   {
@@ -104,93 +98,36 @@ const stylists: Stylist[] = [
     fitTone: "strong",
     based: "Los Angeles, California, US",
     region: "US",
-    representation: "Jeanne Yang Studio / independent public profile",
+    representation: "Jeanne Yang Studio / independent",
     contact: [
       { label: "Instagram", href: "https://www.instagram.com/jeanneyangstyle/" },
-      { label: "Website", href: "https://www.jeanneyangstyle.com/" },
     ],
-    knownFor:
-      "Keanu Reeves, Jason Momoa, Christian Bale, Simu Liu, Regé-Jean Page, Anthony Mackie",
-    summary:
-      "Yang excels at luxurious understatement. The clothes feel grown, masculine, and premium, with enough restraint to preserve the client’s own identity.",
-    bestFor:
-      "If Steven wants richer fabric, better shape, and more gravitas without becoming too fashion-performative.",
+    knownFor: "Keanu Reeves, Jason Momoa, Christian Bale, Simu Liu, Regé-Jean Page, Anthony Mackie",
+    summary: "Yang excels at luxurious understatement. The clothes feel grown, masculine, and premium, with enough restraint to preserve the client's own identity. Her work leans tailored, confident, and grown-up — not overly corporate.",
+    bestFor: "Quiet luxury, masculine confidence, and mature gravitas without drifting into fashion-performative territory.",
     examples: [
-      {
-        celebrity: "Keanu Reeves",
-        note: "Minimal, masculine, anti-flash styling.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Keanu%20Reeves%20(8598631514).jpg",
-        href: "https://www.jeanneyangstyle.com/",
-      },
-      {
-        celebrity: "Regé-Jean Page",
-        note: "Tailoring with movie-star sleekness.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Reg%C3%A9-Jean%20Page%20by%20Gage%20Skidmore.jpg",
-        href: "https://www.jeanneyangstyle.com/",
-      },
+      { celebrity: "Keanu Reeves", note: "Minimal, masculine, anti-flash styling.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Keanu%20Reeves%20(8598631514).jpg", href: "https://www.instagram.com/jeanneyangstyle/" },
+      { celebrity: "Regé-Jean Page", note: "Tailoring with movie-star sleekness.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Reg%C3%A9-Jean%20Page%20by%20Gage%20Skidmore.jpg", href: "https://www.instagram.com/jeanneyangstyle/" },
     ],
   },
   {
     name: "Jason Bolden",
-    fit: "Strong fit",
-    fitTone: "strong",
-    based: "Los Angeles, California, US",
-    region: "US",
-    representation: "JSN Studio",
-    contact: [
-      { label: "JSN Studio", href: "https://www.jsnstudio.com/" },
-      { label: "Instagram", href: "https://www.instagram.com/jasonbolden/" },
-    ],
-    knownFor:
-      "Michael B. Jordan, Trevor Noah, Justin Timberlake, John Legend, Henry Golding",
-    summary:
-      "Bolden can go glossy-Hollywood when needed, but his menswear work is often disciplined and powerful rather than overly fussy. He is useful if the brief needs authority plus visibility.",
-    bestFor:
-      "A more public-facing, media-trained wardrobe system: sharper tailoring, strong outerwear, and confident event dressing.",
-    examples: [
-      {
-        celebrity: "Michael B. Jordan",
-        note: "High-gloss press and premiere tailoring.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Michael%20B.%20Jordan%20by%20Gage%20Skidmore.jpg",
-        href: "https://www.jsnstudio.com/",
-      },
-      {
-        celebrity: "Trevor Noah",
-        note: "Refined talk-show-ready suiting.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Trevor%20Noah%20by%20Gage%20Skidmore.jpg",
-        href: "https://www.jsnstudio.com/",
-      },
-    ],
-  },
-  {
-    name: "Wayman + Micah",
     fit: "Good fit",
     fitTone: "good",
     based: "Los Angeles, California, US",
     region: "US",
-    representation: "Wayman and Micah studio",
+    representation: "JSN Studio",
     contact: [
-      { label: "Website", href: "https://www.waymanandmicah.com/" },
-      { label: "Instagram", href: "https://www.instagram.com/waymanandmicah/" },
+      { label: "stef@jsn.studio", href: "mailto:stef@jsn.studio" },
+      { label: "hello@jsn.studio", href: "mailto:hello@jsn.studio" },
+      { label: "Instagram", href: "https://www.instagram.com/jasonbolden/" },
     ],
-    knownFor: "Colman Domingo, Danny Ramirez, Da'Vinchi, Jharrel Jerome",
-    summary:
-      "Their work has more swing and theater than Bartlett usually wears day to day, but the tailoring standards are excellent and the image-making is memorable.",
-    bestFor:
-      "If Steven wants awards-season-level event dressing or a bigger fashion point of view for covers, shoots, and launches.",
+    knownFor: "Michael B. Jordan (2026 Oscars — custom Louis Vuitton + David Yurman), Lakeith Stanfield (Gucci & Dior), Channing Tatum, Ryan Coogler, Tyriq Withers",
+    summary: "527K followers, Creative Director and co-founder of JSN Studio, owner of Paris boutique @damnimissparis. His March 2026 Oscars run was elite: MBJ accepting his Oscar in custom LV, the Coogler family in custom LV and Cartier. Brands: custom LV, Gucci, Dior, Versace, Prada, Tom Ford, Thom Browne, Fear of God.",
+    bestFor: "Hollywood prestige events, Oscar-level custom looks, high-profile press tours — occasion dressing at the highest level.",
     examples: [
-      {
-        celebrity: "Colman Domingo",
-        note: "Statement tailoring and standout eveningwear.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Colman%20Domingo%20by%20Gage%20Skidmore.jpg",
-        href: "https://www.waymanandmicah.com/",
-      },
-      {
-        celebrity: "Danny Ramirez",
-        note: "Young-Hollywood styling with shape and color control.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Danny%20Ramirez%20by%20Gage%20Skidmore.jpg",
-        href: "https://www.waymanandmicah.com/",
-      },
+      { celebrity: "Michael B. Jordan", note: "2026 Oscars — custom Louis Vuitton + David Yurman. Best dressed of the night.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Michael%20B.%20Jordan%20by%20Gage%20Skidmore.jpg", href: "https://www.instagram.com/jasonbolden/" },
+      { celebrity: "Lakeith Stanfield", note: "Gucci and Dior — culturally-aware luxury in the premium lane.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Lakeith%20Stanfield%20by%20Gage%20Skidmore.jpg", href: "https://www.instagram.com/jasonbolden/" },
     ],
   },
   {
@@ -202,88 +139,33 @@ const stylists: Stylist[] = [
     representation: "Public-facing studio / editorial profile",
     contact: [
       { label: "Instagram", href: "https://www.instagram.com/ugomozie/" },
-      { label: "Editorial profile", href: "https://harpersbazaar.my/bazaar-man/celebrity-menswear-stylists-to-follow-now/" },
     ],
     knownFor: "Jon Batiste, Jeremy Pope, Maluma",
-    summary:
-      "Mozie brings stronger fashion energy, richer texture, and more image construction. He makes sense if Steven wants to move from premium basics into a more editorial lane.",
-    bestFor:
-      "Stepping beyond safe monochrome into luxury fashion storytelling while staying menswear-first.",
+    summary: "Mozie brings stronger fashion energy, richer texture, and more image construction. THR quotes him on cruelty-free fur and conscious fashion — an image-conscious, statement-aware approach. Best if Bartlett wants to push into richer texture, color, and sharper editorial presence.",
+    bestFor: "Stepping beyond safe monochrome into luxury fashion storytelling while staying menswear-first.",
     examples: [
-      {
-        celebrity: "Jon Batiste",
-        note: "Expressive formalwear and cultural polish.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Jon%20Batiste%20at%20the%202023%20National%20Book%20Awards.jpg",
-        href: "https://harpersbazaar.my/bazaar-man/celebrity-menswear-stylists-to-follow-now/",
-      },
-      {
-        celebrity: "Jeremy Pope",
-        note: "Fashion-forward tailoring and red-carpet risk.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Jeremy%20Pope%20by%20Gage%20Skidmore.jpg",
-        href: "https://harpersbazaar.my/bazaar-man/celebrity-menswear-stylists-to-follow-now/",
-      },
-    ],
-  },
-  {
-    name: "Felicity Kay",
-    fit: "Good fit",
-    fitTone: "good",
-    based: "London, England, UK",
-    region: "UK",
-    representation: "Independent public profile",
-    contact: [
-      { label: "Instagram", href: "https://www.instagram.com/felicitykay/" },
-      { label: "Portfolio", href: "https://www.felicitykay.com/" },
-    ],
-    knownFor: "Ncuti Gatwa, Paul Mescal, Kit Connor, Joe Alwyn",
-    summary:
-      "Kay has a particularly useful blend of British tailoring literacy and modern pop-cultural relevance. Her work feels sleek, energetic, and just fashion-aware enough.",
-    bestFor:
-      "A London-fluent option for sharper public appearances that still feel natural rather than overworked.",
-    examples: [
-      {
-        celebrity: "Ncuti Gatwa",
-        note: "Playful tailoring with crisp proportions.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Ncuti%20Gatwa%20by%20Gage%20Skidmore.jpg",
-        href: "https://www.instagram.com/felicitykay/",
-      },
-      {
-        celebrity: "Paul Mescal",
-        note: "Relaxed formalwear and contemporary black-tie energy.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Paul%20Mescal%20at%20the%20Deauville%20American%20Film%20Festival%20in%202022.jpg",
-        href: "https://www.instagram.com/felicitykay/",
-      },
+      { celebrity: "Jon Batiste", note: "Expressive formalwear and cultural polish.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Jon%20Batiste%20at%20the%202023%20National%20Book%20Awards.jpg", href: "https://www.instagram.com/ugomozie/" },
+      { celebrity: "Jeremy Pope", note: "Fashion-forward tailoring and red-carpet risk.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Jeremy%20Pope%20by%20Gage%20Skidmore.jpg", href: "https://www.instagram.com/ugomozie/" },
     ],
   },
   {
     name: "Damian Collins",
     fit: "Good fit",
     fitTone: "good",
-    based: "London, England, UK",
-    region: "UK",
-    representation: "Independent editorial stylist public profile",
+    based: "Los Angeles / New York / Europe",
+    region: "US",
+    representation: "Forward Artists (Agent: Kristyn)",
     contact: [
-      { label: "Instagram", href: "https://www.instagram.com/damianfoxe/" },
-      { label: "Portfolio", href: "https://www.damiancollinsfashionstylist.com/" },
+      { label: "damian@dcacworld.com", href: "mailto:damian@dcacworld.com" },
+      { label: "damiancollins.work", href: "https://damiancollins.work" },
+      { label: "Instagram", href: "https://www.instagram.com/damiancollins/" },
     ],
-    knownFor: "David Gandy, Oliver Cheshire, Richard Biedul, menswear editorial and commercial styling",
-    summary:
-      "Collins is useful as a UK menswear specialist with a more classic-commercial eye. The work is less celebrity-theatrical and more rooted in confident, masculine image building.",
-    bestFor:
-      "British menswear polish, campaign dressing, and a grounded luxury presentation that can work for founder portraits and brand shoots.",
+    knownFor: "Jalen Green + Druski (GQ Men of the Year 2023), Google Pixel campaign",
+    summary: "Small Instagram presence (~2.4K followers) but real credentials: GQ MOTY 2023 styling, Forward Artists placement, and Heron Preston commenting on his work. Streetwear-meets-editorial aesthetic in the sports/entertainment cultural orbit. Chrome Hearts, GQ-level production quality. Also runs @ecstasykitchen (juice brand).",
+    bestFor: "GQ editorial moments, NBA/sports-entertainment crossover luxury, emerging name to track.",
     examples: [
-      {
-        celebrity: "David Gandy",
-        note: "Classic masculine tailoring and campaign-ready polish.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/David%20Gandy%20LFW%20Sept%202015.jpg",
-        href: "https://www.damiancollinsfashionstylist.com/",
-      },
-      {
-        celebrity: "Oliver Cheshire",
-        note: "Commercial menswear styling with clean structure.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Oliver%20Cheshire%20LFW%20Sept%202015.jpg",
-        href: "https://www.damiancollinsfashionstylist.com/",
-      },
+      { celebrity: "Jalen Green", note: "GQ Men of the Year 2023 — streetwear-meets-editorial luxury.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Jalen_Green_2022.jpg", href: "https://www.instagram.com/damiancollins/" },
+      { celebrity: "Druski", note: "GQ MOTY 2023 — culturally fluent styling in the comedy/entertainment space.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Druski_(cropped).jpg", href: "https://www.instagram.com/damiancollins/" },
     ],
   },
   {
@@ -292,29 +174,76 @@ const stylists: Stylist[] = [
     fitTone: "wildcard",
     based: "London, England, UK",
     region: "UK",
-    representation: "CLM",
+    representation: "Bryant Artists",
     contact: [
-      { label: "CLM profile", href: "https://www.clm-agency.com/fashion/harry-lambert" },
-      { label: "Instagram", href: "https://www.instagram.com/harry_lambert/" },
+      { label: "Bryant Artists portfolio", href: "https://www.bryantartists.com/styling/harry-lambert/portfolio" },
+      { label: "Instagram", href: "https://www.instagram.com/harry__lambert/" },
     ],
-    knownFor: "Harry Styles, Josh O'Connor, Eddie Redmayne",
-    summary:
-      "Lambert is more fashion-forward than the obvious Bartlett brief, but worth including because he is one of the clearest UK references for relaxed masculinity pushed into editorial territory.",
-    bestFor:
-      "Only if Steven wants a bigger statement: more silhouette play, more cultural edge, more editorial heat.",
+    knownFor: "Harry Styles (long-term), Bad Bunny (Vogue covers), high-profile fashion collaborations",
+    summary: "628K followers. London-based. The most fashion-forward name on the list — genre-defying menswear that still feels intentional and editorial. Known for bold silhouettes, statement pieces, and fashion-week-level artistry. Not Bartlett's everyday brief but a serious option for a bigger editorial swing.",
+    bestFor: "Magazine shoots, fashion campaigns, pushing creative boundaries — best if Bartlett wants to experiment rather than refine.",
     examples: [
-      {
-        celebrity: "Josh O'Connor",
-        note: "Textural tailoring and fashion-leaning menswear.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Josh%20O%27Connor%20Cannes%202023.jpg",
-        href: "https://www.clm-agency.com/fashion/harry-lambert",
-      },
-      {
-        celebrity: "Eddie Redmayne",
-        note: "More experimental formalwear references.",
-        image: "https://commons.wikimedia.org/wiki/Special:FilePath/Eddie%20Redmayne%202019%20by%20Glenn%20Francis.jpg",
-        href: "https://www.clm-agency.com/fashion/harry-lambert",
-      },
+      { celebrity: "Harry Styles", note: "Genre-defying, fashion-forward styling across multiple Vogue covers.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Harry_Styles_2015.jpg", href: "https://www.instagram.com/harry__lambert/" },
+      { celebrity: "Bad Bunny", note: "Vogue cover styling — bold, intentional, globally iconic.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Bad_Bunny_in_2022.jpg", href: "https://www.instagram.com/harry__lambert/" },
+    ],
+  },
+  {
+    name: "Taylor McNeill",
+    fit: "Wildcard fit",
+    fitTone: "wildcard",
+    based: "New York, USA",
+    region: "US",
+    representation: "The Wall Group",
+    contact: [
+      { label: "alexandria@thewallgroup.com", href: "mailto:alexandria@thewallgroup.com" },
+      { label: "studio@taylormcneill.com", href: "mailto:studio@taylormcneill.com" },
+      { label: "Instagram", href: "https://www.instagram.com/taylor__mcneill/" },
+    ],
+    knownFor: "Timothée Chalamet (custom Givenchy BAFTAs, custom Versace Berlinale), Kendrick Lamar (Super Bowl halftime), Daniel Craig, Robert Pattinson, Lorde",
+    summary: "NYC premium streetwear meets high fashion. Chrome Hearts, Givenchy, Versace, Balmain — worn with irreverence. Cultural credibility is the currency. Named in Vogue's 2025 Best Dressed Stylists. The 'Kendrick would approve' energy. Not corporate at all.",
+    bestFor: "Bartlett as cultural figure — looks for music/art/media circles. Slightly more statement-driven than others, but extremely credible.",
+    examples: [
+      { celebrity: "Timothée Chalamet", note: "Custom Versace and Givenchy — press-tour looks that dominate the conversation.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Timoth%C3%A9e_Chalamet_2019_(cropped).jpg", href: "https://www.instagram.com/taylor__mcneill/" },
+      { celebrity: "Kendrick Lamar", note: "Super Bowl halftime styling — culturally defining menswear at the highest level.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Kendrick_Lamar_2023_LAFC.jpg", href: "https://www.instagram.com/taylor__mcneill/" },
+    ],
+  },
+
+  // ── EMERGING ─────────────────────────────────────────────────────────────
+  {
+    name: "Rose Forde",
+    fit: "Very strong fit (emerging)",
+    fitTone: "strong",
+    based: "London, England, UK",
+    region: "UK",
+    representation: "The Wall Group (implied)",
+    contact: [
+      { label: "Instagram", href: "https://www.instagram.com/rosefordestudio/" },
+    ],
+    knownFor: "Cillian Murphy (long-term — Oppenheimer press tour, SAG, BAFTA, Peaky Blinders 2026), Joe Alwyn (custom Valentino Oscars), Pierce Brosnan (GQ MoY in Prada), Sam Riley (Dries Van Noten)",
+    summary: "18.7K followers. London-based. Dark European minimalism — custom archive-referencing tailoring across Armani, Prada, Zegna, Calvin Klein, and Saint Laurent. Cinematic, serious, precisely masculine. Nothing gratuitous, nothing off-brief. The Cillian Murphy relationship is years-long and is the clearest proof of concept for what Bartlett says he wants.",
+    bestFor: "The Cillian Murphy playbook — dark, precise, minimal, culturally serious. The anti-influencer look. Most aligned aesthetic with Bartlett's stated direction.",
+    examples: [
+      { celebrity: "Cillian Murphy", note: "Oppenheimer press tour and 2026 awards season — dark tailoring that reads cinematic, not corporate.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Cillian_Murphy_Cannes_2023.jpg", href: "https://www.instagram.com/rosefordestudio/" },
+      { celebrity: "Joe Alwyn", note: "Custom Valentino for the Oscars — quiet prestige tailoring.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Joe_Alwyn_Cannes_2022.jpg", href: "https://www.instagram.com/rosefordestudio/" },
+    ],
+  },
+  {
+    name: "Ben Schofield",
+    fit: "Very strong fit (emerging)",
+    fitTone: "strong",
+    based: "London, England, UK",
+    region: "UK",
+    representation: "Bene Studio",
+    contact: [
+      { label: "Bene Studio", href: "https://www.instagram.com/bene___studio/" },
+      { label: "Instagram", href: "https://www.instagram.com/benkschofield/" },
+    ],
+    knownFor: "Harris Dickinson (Prada Ambassador, Balenciaga Global Brand Ambassador), Callum Turner (Louis Vuitton), Archie Madekwe (Ferragamo)",
+    summary: "29.8K followers. London-based, Bene Studio. Dark editorial European menswear — heavy Prada, Balenciaga, Louis Vuitton with a quiet luxury and cinematic editorial edge. Everything is intentional, nothing is showy. Featured in the Whering 100 list of stylists to watch.",
+    bestFor: "The cultural insider template: looking like someone who understands fashion rather than someone dressed for fashion. Harris Dickinson's Balenciaga/Prada work mirrors Bartlett's dark premium brief.",
+    examples: [
+      { celebrity: "Harris Dickinson", note: "Balenciaga and Prada — dark editorial menswear at the brand ambassador level.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Harris_Dickinson_Cannes_2023.jpg", href: "https://www.instagram.com/benkschofield/" },
+      { celebrity: "Callum Turner", note: "Louis Vuitton — luxury menswear with editorial precision.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Callum_Turner_WonderCon_2016.jpg", href: "https://www.instagram.com/benkschofield/" },
     ],
   },
 ]
@@ -332,20 +261,20 @@ const fitStyles = {
 
 const sources = [
   { label: "The Wall Group — Ilaria Urbinati", href: "https://thewallgroup.com/artist/ilaria-urbinati/" },
-  { label: "Jeanne Yang — official site", href: "https://www.jeanneyangstyle.com/" },
+  { label: "THR Hollywood's 25 Most Powerful Stylists 2025", href: "https://www.hollywoodreporter.com/lists/hollywoods-25-most-powerful-stylists/" },
+  { label: "Falcon Artists / Felicity Kay", href: "https://www.instagram.com/withfalcon/" },
   { label: "JSN Studio — Jason Bolden", href: "https://www.jsnstudio.com/" },
-  { label: "Wayman and Micah — official site", href: "https://www.waymanandmicah.com/" },
-  { label: "Felicity Kay — portfolio", href: "https://www.felicitykay.com/" },
-  { label: "Damian Collins — portfolio", href: "https://www.damiancollinsfashionstylist.com/" },
-  { label: "CLM — Harry Lambert", href: "https://www.clm-agency.com/fashion/harry-lambert" },
+  { label: "Bryant Artists — Harry Lambert portfolio", href: "https://www.bryantartists.com/styling/harry-lambert/portfolio" },
+  { label: "Rose Forde Studio — Instagram research (March 2026)", href: "https://www.instagram.com/rosefordestudio/" },
+  { label: "Ben Schofield / Whering 100 2024", href: "https://whering.co.uk/thoughts/whering-100-2024" },
   { label: "WWD — stylists behind awards season leading men", href: "https://wwd.com/eye/people/mens-fashion-stylists-2024-awards-season-1236109146/" },
-  { label: "The Hollywood Reporter — men’s trend stylists feature", href: "https://www.hollywoodreporter.com/lifestyle/shopping/best-mens-fall-fashion-trends-celebrity-stylists-2023-1235599097/" },
-  { label: "Harper’s Bazaar Malaysia — celebrity menswear stylists to follow", href: "https://harpersbazaar.my/bazaar-man/celebrity-menswear-stylists-to-follow-now/" },
+  { label: "Harper's Bazaar Malaysia — celebrity menswear stylists to follow", href: "https://harpersbazaar.my/bazaar-man/celebrity-menswear-stylists-to-follow-now/" },
   { label: "British GQ — At home with Steven Bartlett", href: "https://www.gq-magazine.co.uk/article/steven-bartlett-home-essentials-interview" },
   { label: "Batch LDN — Steven Bartlett wears Batch suits", href: "https://batchldn.com/blogs/news/steven-bartlett-wears-batch-suits" },
 ]
 
-const topThree = sortedStylists.slice(0, 3)
+const topThreeNames = ["Ilaria Urbinati", "Warren Alfie Baker", "Felicity Kay"]
+const topThree = topThreeNames.map((name) => stylists.find((s) => s.name === name)!).filter(Boolean)
 const heroGallery = topThree.flatMap((stylist) => stylist.examples.slice(0, 1))
 const stylePillars = [
   {
@@ -402,7 +331,7 @@ export default function StevenBartlettStylistsPage() {
                 <div className="rounded-[24px] border border-white/10 bg-black/20 p-5">
                   <p className="text-[11px] uppercase tracking-[0.28em] text-stone-400">Top read</p>
                   <p className="mt-3 text-sm leading-6 text-stone-300">
-                    Urbinati first, Baker second, Yang third — with Bolden as the media-gloss alternative.
+                    Urbinati first, Baker second, Felicity Kay third (UK-based) — most practical for Bartlett's media calendar.
                   </p>
                 </div>
               </div>
@@ -517,18 +446,6 @@ export default function StevenBartlettStylistsPage() {
                 )
               })}
             </div>
-
-            <article className="mt-6 rounded-[28px] border border-amber-400/20 bg-amber-400/10 p-6">
-              <div className="flex flex-wrap items-end justify-between gap-4">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-amber-100">Specific request</p>
-                  <h3 className="mt-2 text-2xl font-semibold text-white">Tyriq Withers check</h3>
-                </div>
-              </div>
-              <p className="mt-4 text-sm leading-6 text-stone-200">
-                Included because Juan specifically asked for it. I did not find a reliably attributable, public-facing stylist credit for Tyriq Withers in the sources reviewed for this page. Rather than inventing one, the safer call is to note that his dedicated stylist is <strong>not clearly public/confirmed in this research pass</strong>. If needed later, this can be extended with a deeper trade-press or image-credit pass.
-              </p>
-            </article>
           </article>
         </section>
 
@@ -624,9 +541,10 @@ export default function StevenBartlettStylistsPage() {
             <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-white">Fast decision order</h2>
             <ol className="mt-6 space-y-4 text-sm leading-6 text-stone-300 sm:text-base">
               <li><strong className="text-white">1. Ilaria Urbinati</strong> — best direct match for elevated, relaxed menswear-first polish.</li>
-              <li><strong className="text-white">2. Warren Alfie Baker</strong> — strongest if Steven wants younger, sharper tailoring without losing ease.</li>
-              <li><strong className="text-white">3. Jeanne Yang</strong> — best for quiet luxury and mature confidence.</li>
-              <li><strong className="text-white">4. Jason Bolden</strong> — best if the brief needs more media gloss, premiere dressing, and stronger public-image architecture.</li>
+              <li><strong className="text-white">2. Warren Alfie Baker</strong> — strongest if Steven wants younger, sharper tailoring without losing ease. Named THR Power Stylists 2025.</li>
+              <li><strong className="text-white">3. Felicity Kay</strong> — UK-based (Falcon Artists), most practical for Bartlett's UK media calendar. The Paul Mescal template.</li>
+              <li><strong className="text-white">4. Rose Forde</strong> — emerging London stylist; the Cillian Murphy playbook. Most aligned aesthetic with Bartlett's stated dark/minimal direction.</li>
+              <li><strong className="text-white">5. Jason Bolden</strong> — best if the brief needs Hollywood prestige events, Oscar-level custom looks, and stronger public-image architecture.</li>
             </ol>
           </article>
 
