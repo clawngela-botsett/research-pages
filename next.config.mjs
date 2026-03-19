@@ -1,9 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'export',
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH || '',
   images: {
     unoptimized: true,
   },
-  trailingSlash: true, // Better for Firebase Hosting
+  trailingSlash: true, // Better for Firebase Hosting / GitHub Pages
   eslint: {
     ignoreDuringBuilds: true, // Skip ESLint to reduce memory usage
   },
