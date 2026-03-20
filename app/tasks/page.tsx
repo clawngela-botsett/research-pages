@@ -20,6 +20,7 @@ const STATUSES = [
   { key: 'in-progress', label: 'In Progress', color: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
   { key: 'waiting-reply', label: 'Waiting', color: 'bg-amber-500/20 text-amber-300 border-amber-500/30' },
   { key: 'waiting-me', label: 'On Me', color: 'bg-orange-500/20 text-orange-300 border-orange-500/30' },
+  { key: 'disregard', label: 'Disregard', color: 'bg-red-500/20 text-red-300 border-red-500/30' },
   { key: 'done', label: 'Done', color: 'bg-green-500/20 text-green-300 border-green-500/30' },
 ]
 
@@ -161,7 +162,7 @@ export default function TasksPage() {
   }
 
   const clearCompleted = () => {
-    saveTasks(tasks.filter(t => t.status !== 'done'))
+    saveTasks(tasks.filter(t => t.status !== 'done' && t.status !== 'disregard'))
   }
 
   // Filter
@@ -175,14 +176,14 @@ export default function TasksPage() {
     return sortOrder === 'newest' ? -cmp : cmp
   }
 
-  const activeTasks = filtered.filter(t => t.status !== 'done').sort(sortFn)
-  const doneTasks = filtered.filter(t => t.status === 'done').sort(sortFn)
+  const activeTasks = filtered.filter(t => t.status !== 'done' && t.status !== 'disregard').sort(sortFn)
+  const doneTasks = filtered.filter(t => t.status === 'done' || t.status === 'disregard').sort(sortFn)
 
   // Badge counts (active only)
   const badgeCount = (cat: string) =>
-    tasks.filter(t => t.status !== 'done' && (cat === 'All' ? true : t.category === cat)).length
+    tasks.filter(t => t.status !== 'done' && t.status !== 'disregard' && (cat === 'All' ? true : t.category === cat)).length
 
-  const activeCount = tasks.filter(t => t.status !== 'done').length
+  const activeCount = tasks.filter(t => t.status !== 'done' && t.status !== 'disregard').length
 
   if (!mounted) return null
 
