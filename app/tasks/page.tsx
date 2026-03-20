@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { db } from '@/lib/firebase'
+import { db, ensureAuth } from '@/lib/firebase'
 import { collection, doc, setDoc, deleteDoc, onSnapshot, query, orderBy } from 'firebase/firestore'
 
 interface Task {
@@ -59,7 +59,36 @@ function exportCSV(tasks: Task[]) {
   URL.revokeObjectURL(url)
 }
 
+const TASK_PIN = 'sb2026'
+
 export default function TasksPage() {
+  const [unlocked, setUnlocked] = useState(false)
+  const [pin, setPin] = useState('')
+  const [pinError, setPinError] = useState(false)
+
+  // Check if already unlocked in this session
+  useEffect(() => {
+    if (sessionStorage.getItem('tasks-unlocked') === 'true') {
+      setUnlocked(true)
+    }
+  }, [])
+
+  // Ensure Firebase anonymous auth
+  useEffect(() => {
+    ensureAuth()
+  }, [])
+
+  const handleUnlock = () => {
+    if (pin === TASK_PIN) {
+      sessionStorage.setItem('tasks-unlocked', 'true')
+      setUnlocked(true)
+    } else {
+      setPinError(true)
+      setPin('')
+      setTimeout(() => setPinError(false), 2000)
+    }
+  }
+
   const [tasks, setTasks] = useState<Task[]>([])
   const [loaded, setLoaded] = useState(false)
   const [newText, setNewText] = useState('')
@@ -211,6 +240,36 @@ export default function TasksPage() {
     tasks.filter(t => t.status !== 'done' && t.status !== 'disregard' && (cat === 'All' ? true : t.category === cat)).length
 
   const activeCount = tasks.filter(t => t.status !== 'done' && t.status !== 'disregard').length
+
+  if (!unlocked) {
+    return (
+      <div className="min-h-screen bg-[#0d0d0f] flex items-center justify-center px-4">
+        <div className="w-full max-w-xs text-center">
+          <div className="text-3xl mb-6">🔒</div>
+          <h1 className="text-white text-xl font-semibold mb-2">Tasks</h1>
+          <p className="text-gray-500 text-sm mb-6">Enter your PIN to continue</p>
+          <input
+            type="password"
+            inputMode="numeric"
+            className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-white text-center text-xl tracking-widest focus:outline-none mb-3 ${pinError ? 'border-red-500 animate-pulse' : 'border-white/10 focus:border-white/30'}`}
+            style={{ fontSize: '20px' }}
+            placeholder="••••••"
+            value={pin}
+            onChange={e => setPin(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') handleUnlock() }}
+            autoFocus
+          />
+          <button
+            onClick={handleUnlock}
+            className="w-full bg-white text-black font-semibold py-3 rounded-xl active:scale-95 transition-transform"
+          >
+            Unlock
+          </button>
+          {pinError && <p className="text-red-400 text-sm mt-3">Incorrect PIN</p>}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-gray-100 overflow-x-hidden">
