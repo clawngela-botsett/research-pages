@@ -18,8 +18,8 @@ const LAST_CATEGORY_KEY = 'juan-tasks-last-category'
 const STATUSES = [
   { key: 'todo', label: 'To Do', color: 'bg-gray-500/20 text-gray-300 border-gray-500/30' },
   { key: 'in-progress', label: 'In Progress', color: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
-  { key: 'waiting-reply', label: 'Waiting on Reply', color: 'bg-amber-500/20 text-amber-300 border-amber-500/30' },
-  { key: 'waiting-me', label: 'Waiting on Me', color: 'bg-orange-500/20 text-orange-300 border-orange-500/30' },
+  { key: 'waiting-reply', label: 'Waiting', color: 'bg-amber-500/20 text-amber-300 border-amber-500/30' },
+  { key: 'waiting-me', label: 'On Me', color: 'bg-orange-500/20 text-orange-300 border-orange-500/30' },
   { key: 'done', label: 'Done', color: 'bg-green-500/20 text-green-300 border-green-500/30' },
 ]
 
@@ -67,6 +67,7 @@ export default function TasksPage() {
   const [mounted, setMounted] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const editRef = useRef<HTMLInputElement>(null)
+  const activeTabRef = useRef<HTMLButtonElement>(null)
 
   // Load from localStorage
   useEffect(() => {
@@ -79,6 +80,11 @@ export default function TasksPage() {
     } catch {}
   }, [])
 
+  // Scroll active tab into view
+  useEffect(() => {
+    activeTabRef.current?.scrollIntoView({ inline: 'nearest', block: 'nearest' })
+  }, [activeTab])
+
   // Save to localStorage
   const saveTasks = useCallback((updated: Task[]) => {
     setTasks(updated)
@@ -87,7 +93,7 @@ export default function TasksPage() {
     } catch {}
   }, [])
 
-  // "/" shortcut to focus input
+  // "/" shortcut to focus input (desktop only)
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (
@@ -181,28 +187,29 @@ export default function TasksPage() {
   if (!mounted) return null
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-gray-100">
+    <div className="min-h-screen bg-[#0f0f0f] text-gray-100 overflow-x-hidden">
       {/* Header */}
       <header className="sticky top-0 z-20 bg-[#0f0f0f]/95 backdrop-blur border-b border-white/5">
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl font-semibold tracking-tight text-white">Tasks</h1>
-            <span className="text-sm text-gray-500">
+        {/* Title row */}
+        <div className="max-w-2xl mx-auto px-4 pt-4 pb-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <h1 className="text-xl font-semibold tracking-tight text-white whitespace-nowrap">Tasks</h1>
+            <span className="text-sm text-gray-500 whitespace-nowrap">
               {activeCount} active
             </span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             {/* Sort toggle */}
             <button
               onClick={() => setSortOrder(s => s === 'newest' ? 'oldest' : 'newest')}
-              className="text-xs text-gray-500 hover:text-gray-300 transition-colors px-2 py-1 rounded border border-white/5 hover:border-white/10"
+              className="text-xs text-gray-500 hover:text-gray-300 transition-colors px-3 py-2 min-h-[36px] rounded border border-white/5 hover:border-white/10 flex items-center"
             >
-              {sortOrder === 'newest' ? '↓ Newest' : '↑ Oldest'}
+              {sortOrder === 'newest' ? '↓ New' : '↑ Old'}
             </button>
             {/* Export CSV */}
             <button
               onClick={() => exportCSV(tasks)}
-              className="text-xs text-gray-500 hover:text-gray-300 transition-colors px-2 py-1 rounded border border-white/5 hover:border-white/10"
+              className="text-xs text-gray-500 hover:text-gray-300 transition-colors px-3 py-2 min-h-[36px] rounded border border-white/5 hover:border-white/10 flex items-center whitespace-nowrap"
             >
               Export CSV
             </button>
@@ -210,52 +217,62 @@ export default function TasksPage() {
         </div>
 
         {/* Quick-add bar */}
-        <div className="max-w-3xl mx-auto px-4 pb-3">
-          <div className="flex gap-2">
+        <div className="max-w-2xl mx-auto px-4 pb-3">
+          <div className="flex flex-col sm:flex-row gap-2">
+            {/* Task input — full width on mobile */}
             <input
               ref={inputRef}
               type="text"
               value={newText}
               onChange={e => setNewText(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && addTask()}
-              placeholder="Add a task... (press / to focus)"
-              autoFocus
-              className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white/20 focus:bg-white/8 transition-colors"
+              placeholder="Add a task…"
+              className="w-full sm:flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-3 text-base text-white placeholder-gray-600 focus:outline-none focus:border-white/20 focus:bg-white/[0.08] transition-colors min-h-[44px]"
+              style={{ fontSize: '16px' }}
             />
-            <select
-              value={newCategory}
-              onChange={e => {
-                setNewCategory(e.target.value)
-                try { localStorage.setItem(LAST_CATEGORY_KEY, e.target.value) } catch {}
-              }}
-              className="bg-white/5 border border-white/10 rounded-lg px-2 py-2 text-sm text-gray-300 focus:outline-none focus:border-white/20 transition-colors cursor-pointer"
-            >
-              {CATEGORIES.map(c => (
-                <option key={c} value={c} className="bg-[#1a1a1a]">{c}</option>
-              ))}
-            </select>
-            <button
-              onClick={addTask}
-              className="bg-white text-black text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              Add
-            </button>
+            {/* Category + Add button row */}
+            <div className="flex gap-2">
+              <select
+                value={newCategory}
+                onChange={e => {
+                  setNewCategory(e.target.value)
+                  try { localStorage.setItem(LAST_CATEGORY_KEY, e.target.value) } catch {}
+                }}
+                className="flex-1 sm:flex-none bg-white/5 border border-white/10 rounded-lg px-2 py-3 text-sm text-gray-300 focus:outline-none focus:border-white/20 transition-colors cursor-pointer min-h-[44px]"
+                style={{ fontSize: '16px' }}
+              >
+                {CATEGORIES.map(c => (
+                  <option key={c} value={c} className="bg-[#1a1a1a]">{c}</option>
+                ))}
+              </select>
+              <button
+                onClick={addTask}
+                className="bg-white text-black text-sm font-semibold px-5 py-3 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-colors min-h-[44px] whitespace-nowrap"
+              >
+                Add
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Filter tabs */}
-        <div className="max-w-3xl mx-auto px-4 pb-3 flex gap-1 overflow-x-auto scrollbar-hide">
+        {/* Filter tabs — horizontal scroll, no wrap */}
+        <div
+          className="max-w-2xl mx-auto px-4 pb-3 flex gap-1 overflow-x-auto"
+          style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          <style>{`.filter-tabs::-webkit-scrollbar { display: none; }`}</style>
           {['All', ...CATEGORIES].map(tab => {
             const count = badgeCount(tab)
             const isActive = activeTab === tab
             return (
               <button
                 key={tab}
+                ref={isActive ? activeTabRef : undefined}
                 onClick={() => setActiveTab(tab)}
-                className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-colors min-h-[36px] ${
                   isActive
                     ? 'bg-white text-black'
-                    : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'
+                    : 'text-gray-500 hover:text-gray-300 hover:bg-white/5 active:bg-white/10'
                 }`}
               >
                 {tab}
@@ -273,7 +290,7 @@ export default function TasksPage() {
       </header>
 
       {/* Task list */}
-      <main className="max-w-3xl mx-auto px-4 py-4 space-y-1">
+      <main className="max-w-2xl mx-auto px-3 sm:px-4 py-4 space-y-1">
         {/* Active tasks */}
         {activeTasks.length === 0 && doneTasks.length === 0 && (
           <div className="text-center py-16 text-gray-600 text-sm">
@@ -309,7 +326,7 @@ export default function TasksPage() {
               </p>
               <button
                 onClick={clearCompleted}
-                className="text-xs text-gray-600 hover:text-red-400 transition-colors"
+                className="text-xs text-gray-600 hover:text-red-400 active:text-red-400 transition-colors py-2 px-1 min-h-[36px] flex items-center"
               >
                 Clear completed
               </button>
@@ -362,22 +379,23 @@ function TaskRow({
   const status = getStatusInfo(task.status)
 
   return (
-    <div className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg border transition-colors ${
+    <div className={`group flex items-start gap-2 px-3 py-3 rounded-lg border transition-colors ${
       isDone
-        ? 'border-white/3 opacity-50 hover:opacity-70'
-        : 'border-white/5 hover:border-white/10 hover:bg-white/2'
+        ? 'border-white/[0.03] opacity-50 hover:opacity-70'
+        : 'border-white/5 hover:border-white/10 hover:bg-white/[0.02] active:bg-white/[0.03]'
     }`}>
-      {/* Status badge */}
+      {/* Status badge — tappable, min 36px height */}
       <button
         onClick={onCycleStatus}
-        title="Click to cycle status"
-        className={`flex-shrink-0 text-[10px] font-semibold px-2 py-1 rounded-full border transition-all hover:scale-105 ${status.color}`}
+        title="Tap to cycle status"
+        className={`flex-shrink-0 text-[11px] font-semibold px-2.5 rounded-full border transition-all active:scale-95 flex items-center min-h-[36px] ${status.color}`}
       >
         {status.label}
       </button>
 
-      {/* Task text */}
-      <div className="flex-1 min-w-0">
+      {/* Task content — stacked on mobile */}
+      <div className="flex-1 min-w-0 flex flex-col gap-1">
+        {/* Task text / edit input */}
         {isEditing ? (
           <input
             ref={editRef}
@@ -385,33 +403,34 @@ function TaskRow({
             onChange={e => onEditChange(e.target.value)}
             onBlur={onEditCommit}
             onKeyDown={onEditKeyDown}
-            className="w-full bg-white/10 border border-white/20 rounded px-2 py-0.5 text-sm text-white focus:outline-none"
+            className="w-full bg-white/10 border border-white/20 rounded px-2 py-1.5 text-white focus:outline-none min-h-[36px]"
+            style={{ fontSize: '16px' }}
           />
         ) : (
           <span
             onClick={onStartEdit}
-            className={`text-sm cursor-text ${isDone ? 'line-through text-gray-500' : 'text-gray-100'}`}
-            title="Click to edit"
+            className={`cursor-text leading-snug ${isDone ? 'line-through text-gray-500' : 'text-gray-100'}`}
+            style={{ fontSize: '15px' }}
           >
             {task.text}
           </span>
         )}
+
+        {/* Meta row: category + date */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-[11px] text-gray-600 bg-white/5 px-2 py-0.5 rounded-full">
+            {task.category}
+          </span>
+          <span className="text-[11px] text-gray-700">
+            {formatDate(task.createdAt)}
+          </span>
+        </div>
       </div>
 
-      {/* Category pill */}
-      <span className="flex-shrink-0 text-[10px] text-gray-600 bg-white/5 px-2 py-0.5 rounded-full">
-        {task.category}
-      </span>
-
-      {/* Date */}
-      <span className="flex-shrink-0 text-[10px] text-gray-700 hidden sm:block">
-        {formatDate(task.createdAt)}
-      </span>
-
-      {/* Delete */}
+      {/* Delete button — always visible on mobile (subtle), hover-only on desktop */}
       <button
         onClick={onDelete}
-        className="flex-shrink-0 opacity-0 group-hover:opacity-100 text-gray-600 hover:text-red-400 transition-all"
+        className="flex-shrink-0 text-gray-600 hover:text-red-400 active:text-red-400 transition-colors p-1 min-h-[36px] min-w-[36px] flex items-center justify-center opacity-40 sm:opacity-0 sm:group-hover:opacity-100"
         title="Delete task"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

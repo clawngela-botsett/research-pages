@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { AuthProvider } from "@/components/auth-provider"
@@ -10,6 +10,11 @@ const appName = process.env.NEXT_PUBLIC_APP_NAME || "My App"
 const appDescription = process.env.NEXT_PUBLIC_APP_DESCRIPTION ||
   "A modern web application built with Next.js and Firebase"
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://example.com"
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
 
 export const metadata: Metadata = {
   title: appName,
