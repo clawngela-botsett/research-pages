@@ -255,7 +255,6 @@ export default function TasksPage() {
           <p className="text-gray-500 text-sm mb-6">Enter your PIN to continue</p>
           <input
             type="password"
-            inputMode="numeric"
             className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-white text-center text-xl tracking-widest focus:outline-none mb-3 ${pinError ? 'border-red-500 animate-pulse' : 'border-white/10 focus:border-white/30'}`}
             style={{ fontSize: '20px' }}
             placeholder="••••••"
