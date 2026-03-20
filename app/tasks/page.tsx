@@ -59,7 +59,7 @@ function exportCSV(tasks: Task[]) {
   URL.revokeObjectURL(url)
 }
 
-const TASK_PIN = 'sb2026'
+const TASK_PIN = 'sb8116'
 
 export default function TasksPage() {
   const [unlocked, setUnlocked] = useState(false)
