@@ -11,7 +11,7 @@ interface Task {
   updatedAt: string
 }
 
-const CATEGORIES = ['DOAC', 'Commercial', 'Speaking', 'Private', 'Travel', 'SB Requests', 'Press/PR', 'BTD', 'FounderStory', 'Marketing']
+const CATEGORIES = ['DOAC', 'Commercial', 'Speaking', 'Private', 'Travel', 'SB Requests', 'Press/PR', 'BTD', 'FounderStory', 'Marketing', 'Other']
 const STORAGE_KEY = 'juan-tasks'
 const LAST_CATEGORY_KEY = 'juan-tasks-last-category'
 
