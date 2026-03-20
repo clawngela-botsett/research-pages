@@ -7,6 +7,7 @@ interface Task {
   text: string
   category: string
   status: string
+  notes: string
   createdAt: string
   updatedAt: string
 }
@@ -43,9 +44,9 @@ function generateId() {
 }
 
 function exportCSV(tasks: Task[]) {
-  const header = 'id,text,category,status,createdAt,updatedAt'
+  const header = 'id,text,category,status,notes,createdAt,updatedAt'
   const rows = tasks.map(t =>
-    [t.id, `"${t.text.replace(/"/g, '""')}"`, t.category, t.status, t.createdAt, t.updatedAt].join(',')
+    [t.id, `"${t.text.replace(/"/g, '""')}"`, t.category, t.status, `"${(t.notes || '').replace(/"/g, '""')}"`, t.createdAt, t.updatedAt].join(',')
   )
   const csv = [header, ...rows].join('\n')
   const blob = new Blob([csv], { type: 'text/csv' })
@@ -66,6 +67,7 @@ export default function TasksPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
   const [mounted, setMounted] = useState(false)
+  const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set())
   const inputRef = useRef<HTMLInputElement>(null)
   const editRef = useRef<HTMLInputElement>(null)
   const activeTabRef = useRef<HTMLButtonElement>(null)
@@ -126,6 +128,7 @@ export default function TasksPage() {
       text,
       category: newCategory,
       status: 'todo',
+      notes: '',
       createdAt: now,
       updatedAt: now,
     }
@@ -163,6 +166,18 @@ export default function TasksPage() {
 
   const clearCompleted = () => {
     saveTasks(tasks.filter(t => t.status !== 'done' && t.status !== 'disregard'))
+  }
+
+  const updateNote = (id: string, notes: string) => {
+    saveTasks(tasks.map(t => t.id === id ? { ...t, notes, updatedAt: new Date().toISOString() } : t))
+  }
+
+  const toggleNotes = (id: string) => {
+    setExpandedNotes(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
   }
 
   // Filter
@@ -306,6 +321,7 @@ export default function TasksPage() {
             isEditing={editingId === task.id}
             editText={editText}
             editRef={editRef}
+            isNotesExpanded={expandedNotes.has(task.id)}
             onCycleStatus={() => cycleTaskStatus(task.id)}
             onStartEdit={() => startEdit(task)}
             onEditChange={setEditText}
@@ -315,6 +331,8 @@ export default function TasksPage() {
               if (e.key === 'Escape') setEditingId(null)
             }}
             onDelete={() => deleteTask(task.id)}
+            onToggleNotes={() => toggleNotes(task.id)}
+            onUpdateNote={(notes) => updateNote(task.id, notes)}
           />
         ))}
 
@@ -339,6 +357,7 @@ export default function TasksPage() {
                 isEditing={editingId === task.id}
                 editText={editText}
                 editRef={editRef}
+                isNotesExpanded={expandedNotes.has(task.id)}
                 onCycleStatus={() => cycleTaskStatus(task.id)}
                 onStartEdit={() => startEdit(task)}
                 onEditChange={setEditText}
@@ -348,6 +367,8 @@ export default function TasksPage() {
                   if (e.key === 'Escape') setEditingId(null)
                 }}
                 onDelete={() => deleteTask(task.id)}
+                onToggleNotes={() => toggleNotes(task.id)}
+                onUpdateNote={(notes) => updateNote(task.id, notes)}
                 isDone
               />
             ))}
@@ -363,19 +384,25 @@ interface TaskRowProps {
   isEditing: boolean
   editText: string
   editRef: React.RefObject<HTMLInputElement | null>
+  isNotesExpanded: boolean
   onCycleStatus: () => void
   onStartEdit: () => void
   onEditChange: (v: string) => void
   onEditCommit: () => void
   onEditKeyDown: (e: React.KeyboardEvent) => void
   onDelete: () => void
+  onToggleNotes: () => void
+  onUpdateNote: (notes: string) => void
   isDone?: boolean
 }
 
 function TaskRow({
   task, isEditing, editText, editRef,
+  isNotesExpanded,
   onCycleStatus, onStartEdit, onEditChange,
-  onEditCommit, onEditKeyDown, onDelete, isDone
+  onEditCommit, onEditKeyDown, onDelete,
+  onToggleNotes, onUpdateNote,
+  isDone
 }: TaskRowProps) {
   const status = getStatusInfo(task.status)
 
@@ -426,6 +453,30 @@ function TaskRow({
             {formatDate(task.createdAt)}
           </span>
         </div>
+
+        {/* Notes toggle button */}
+        <button
+          onClick={onToggleNotes}
+          className={`text-xs mt-1 flex items-center gap-1 transition-colors ${
+            task.notes ? 'text-blue-400' : 'text-gray-600 hover:text-gray-400'
+          }`}
+        >
+          {isNotesExpanded ? '▾' : '▸'}
+          {task.notes ? 'Note' : 'Add note'}
+          {task.notes && <span className="w-1.5 h-1.5 rounded-full bg-blue-400 inline-block" />}
+        </button>
+
+        {/* Expandable notes area */}
+        {isNotesExpanded && (
+          <textarea
+            className="mt-1 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-600 resize-none focus:outline-none focus:border-white/20"
+            style={{ fontSize: '16px', minHeight: '80px' }}
+            placeholder="Add a note or update..."
+            value={task.notes || ''}
+            onChange={e => onUpdateNote(e.target.value)}
+            onKeyDown={e => e.stopPropagation()}
+          />
+        )}
       </div>
 
       {/* Delete button — always visible on mobile (subtle), hover-only on desktop */}
