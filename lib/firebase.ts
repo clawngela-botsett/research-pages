@@ -1,6 +1,6 @@
 import { initializeApp, getApps } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
-import { getAuth, signInAnonymously } from 'firebase/auth'
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth'
 
 const firebaseConfig = {
   apiKey: "AIzaSyCyqUjPKCr7eKzsMoyCTfEtMiLuQ6wZqJI",
@@ -16,5 +16,19 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 export const db = getFirestore(app)
 export const auth = getAuth(app)
 
-// Auto sign-in anonymously — called once when app loads
+// Returns a promise that resolves once the user is signed in
+export const waitForAuth = (): Promise<void> => {
+  return new Promise((resolve) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        unsubscribe()
+        resolve()
+      } else {
+        signInAnonymously(auth).catch(() => {})
+      }
+    })
+  })
+}
+
+// Keep ensureAuth for backward compat
 export const ensureAuth = () => signInAnonymously(auth).catch(() => {})

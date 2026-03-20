@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { db, ensureAuth } from '@/lib/firebase'
+import { db, waitForAuth } from '@/lib/firebase'
 import { collection, doc, setDoc, deleteDoc, onSnapshot, query, orderBy } from 'firebase/firestore'
 
 interface Task {
@@ -73,11 +73,6 @@ export default function TasksPage() {
     }
   }, [])
 
-  // Ensure Firebase anonymous auth
-  useEffect(() => {
-    ensureAuth()
-  }, [])
-
   const handleUnlock = () => {
     if (pin === TASK_PIN) {
       sessionStorage.setItem('tasks-unlocked', 'true')
@@ -110,15 +105,25 @@ export default function TasksPage() {
     } catch {}
   }, [])
 
-  // Firestore real-time listener
+  // Ensure auth then subscribe to Firestore
   useEffect(() => {
-    const q = query(collection(db, 'tasks'), orderBy('createdAt', 'desc'))
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const docs = snapshot.docs.map(d => d.data() as Task)
-      setTasks(docs)
-      setLoaded(true)
+    let unsubscribeSnapshot: (() => void) | null = null
+
+    waitForAuth().then(() => {
+      const q = query(collection(db, 'tasks'), orderBy('createdAt', 'desc'))
+      unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
+        const docs = snapshot.docs.map(d => d.data() as Task)
+        setTasks(docs)
+        setLoaded(true)
+      }, (error) => {
+        console.error('Firestore error:', error)
+        setLoaded(true)
+      })
     })
-    return () => unsubscribe()
+
+    return () => {
+      if (unsubscribeSnapshot) unsubscribeSnapshot()
+    }
   }, [])
 
   // Scroll active tab into view
