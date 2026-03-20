@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { db } from '@/lib/firebase'
+import { collection, doc, setDoc, deleteDoc, onSnapshot, query, orderBy } from 'firebase/firestore'
 
 interface Task {
   id: string
@@ -13,7 +15,6 @@ interface Task {
 }
 
 const CATEGORIES = ['DOAC', 'Commercial', 'Speaking', 'Private', 'Travel', 'SB Requests', 'Press/PR', 'BTD', 'FounderStory', 'Marketing', 'Other']
-const STORAGE_KEY = 'juan-tasks'
 const LAST_CATEGORY_KEY = 'juan-tasks-last-category'
 
 const STATUSES = [
@@ -60,41 +61,41 @@ function exportCSV(tasks: Task[]) {
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([])
+  const [loaded, setLoaded] = useState(false)
   const [newText, setNewText] = useState('')
   const [newCategory, setNewCategory] = useState(CATEGORIES[0])
   const [activeTab, setActiveTab] = useState('All')
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
-  const [mounted, setMounted] = useState(false)
   const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set())
   const inputRef = useRef<HTMLInputElement>(null)
   const editRef = useRef<HTMLInputElement>(null)
   const activeTabRef = useRef<HTMLButtonElement>(null)
 
-  // Load from localStorage
+  // Load last-used category from localStorage (UI preference, not data)
   useEffect(() => {
-    setMounted(true)
     try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      if (raw) setTasks(JSON.parse(raw))
       const lastCat = localStorage.getItem(LAST_CATEGORY_KEY)
       if (lastCat && CATEGORIES.includes(lastCat)) setNewCategory(lastCat)
     } catch {}
+  }, [])
+
+  // Firestore real-time listener
+  useEffect(() => {
+    const q = query(collection(db, 'tasks'), orderBy('createdAt', 'desc'))
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const docs = snapshot.docs.map(d => d.data() as Task)
+      setTasks(docs)
+      setLoaded(true)
+    })
+    return () => unsubscribe()
   }, [])
 
   // Scroll active tab into view
   useEffect(() => {
     activeTabRef.current?.scrollIntoView({ inline: 'nearest', block: 'nearest' })
   }, [activeTab])
-
-  // Save to localStorage
-  const saveTasks = useCallback((updated: Task[]) => {
-    setTasks(updated)
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
-    } catch {}
-  }, [])
 
   // "/" shortcut to focus input (desktop only)
   useEffect(() => {
@@ -119,6 +120,15 @@ export default function TasksPage() {
     }
   }, [editingId])
 
+  // Firestore helpers
+  const upsertTask = useCallback(async (task: Task) => {
+    await setDoc(doc(db, 'tasks', task.id), task)
+  }, [])
+
+  const removeTask = useCallback(async (id: string) => {
+    await deleteDoc(doc(db, 'tasks', id))
+  }, [])
+
   const addTask = () => {
     const text = newText.trim()
     if (!text) return
@@ -132,22 +142,20 @@ export default function TasksPage() {
       createdAt: now,
       updatedAt: now,
     }
-    saveTasks([task, ...tasks])
+    upsertTask(task)
     setNewText('')
     try { localStorage.setItem(LAST_CATEGORY_KEY, newCategory) } catch {}
     inputRef.current?.focus()
   }
 
   const deleteTask = (id: string) => {
-    saveTasks(tasks.filter(t => t.id !== id))
+    removeTask(id)
   }
 
   const cycleTaskStatus = (id: string) => {
-    saveTasks(tasks.map(t =>
-      t.id === id
-        ? { ...t, status: cycleStatus(t.status), updatedAt: new Date().toISOString() }
-        : t
-    ))
+    const task = tasks.find(t => t.id === id)
+    if (!task) return
+    upsertTask({ ...task, status: cycleStatus(task.status), updatedAt: new Date().toISOString() })
   }
 
   const startEdit = (task: Task) => {
@@ -158,18 +166,22 @@ export default function TasksPage() {
   const commitEdit = (id: string) => {
     const text = editText.trim()
     if (!text) return
-    saveTasks(tasks.map(t =>
-      t.id === id ? { ...t, text, updatedAt: new Date().toISOString() } : t
-    ))
+    const task = tasks.find(t => t.id === id)
+    if (!task) return
+    upsertTask({ ...task, text, updatedAt: new Date().toISOString() })
     setEditingId(null)
   }
 
   const clearCompleted = () => {
-    saveTasks(tasks.filter(t => t.status !== 'done' && t.status !== 'disregard'))
+    tasks
+      .filter(t => t.status === 'done' || t.status === 'disregard')
+      .forEach(t => removeTask(t.id))
   }
 
   const updateNote = (id: string, notes: string) => {
-    saveTasks(tasks.map(t => t.id === id ? { ...t, notes, updatedAt: new Date().toISOString() } : t))
+    const task = tasks.find(t => t.id === id)
+    if (!task) return
+    upsertTask({ ...task, notes, updatedAt: new Date().toISOString() })
   }
 
   const toggleNotes = (id: string) => {
@@ -199,8 +211,6 @@ export default function TasksPage() {
     tasks.filter(t => t.status !== 'done' && t.status !== 'disregard' && (cat === 'All' ? true : t.category === cat)).length
 
   const activeCount = tasks.filter(t => t.status !== 'done' && t.status !== 'disregard').length
-
-  if (!mounted) return null
 
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-gray-100 overflow-x-hidden">
@@ -307,14 +317,21 @@ export default function TasksPage() {
 
       {/* Task list */}
       <main className="max-w-2xl mx-auto px-3 sm:px-4 py-4 space-y-1">
+        {/* Loading state */}
+        {!loaded && (
+          <div className="text-center py-16 text-gray-600 text-sm">
+            Loading…
+          </div>
+        )}
+
         {/* Active tasks */}
-        {activeTasks.length === 0 && doneTasks.length === 0 && (
+        {loaded && activeTasks.length === 0 && doneTasks.length === 0 && (
           <div className="text-center py-16 text-gray-600 text-sm">
             No tasks yet. Type above and hit Enter.
           </div>
         )}
 
-        {activeTasks.map(task => (
+        {loaded && activeTasks.map(task => (
           <TaskRow
             key={task.id}
             task={task}
@@ -337,7 +354,7 @@ export default function TasksPage() {
         ))}
 
         {/* Done section */}
-        {doneTasks.length > 0 && (
+        {loaded && doneTasks.length > 0 && (
           <>
             <div className="flex items-center justify-between pt-4 pb-1">
               <p className="text-xs text-gray-600 uppercase tracking-wider font-medium">
