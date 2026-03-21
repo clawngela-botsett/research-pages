@@ -10,6 +10,7 @@ interface Task {
   category: string
   status: string
   notes: string
+  dueDate?: string
   createdAt: string
   updatedAt: string
 }
@@ -40,14 +41,25 @@ function formatDate(iso: string) {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
 }
 
+function isOverdue(dueDate: string): boolean {
+  return new Date(dueDate) < new Date(new Date().toDateString())
+}
+
+function isDueSoon(dueDate: string): boolean {
+  const due = new Date(dueDate)
+  const now = new Date()
+  const diffDays = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+  return diffDays <= 2 && diffDays >= 0
+}
+
 function generateId() {
   return Math.random().toString(36).slice(2) + Date.now().toString(36)
 }
 
 function exportCSV(tasks: Task[]) {
-  const header = 'id,text,category,status,notes,createdAt,updatedAt'
+  const header = 'id,text,category,status,notes,dueDate,createdAt,updatedAt'
   const rows = tasks.map(t =>
-    [t.id, `"${t.text.replace(/"/g, '""')}"`, t.category, t.status, `"${(t.notes || '').replace(/"/g, '""')}"`, t.createdAt, t.updatedAt].join(',')
+    [t.id, `"${t.text.replace(/"/g, '""')}"`, t.category, t.status, `"${(t.notes || '').replace(/"/g, '""')}"`, t.dueDate || '', t.createdAt, t.updatedAt].join(',')
   )
   const csv = [header, ...rows].join('\n')
   const blob = new Blob([csv], { type: 'text/csv' })
@@ -88,7 +100,9 @@ export default function TasksPage() {
   const [loaded, setLoaded] = useState(false)
   const [newText, setNewText] = useState('')
   const [newCategory, setNewCategory] = useState(CATEGORIES[0])
+  const [newDueDate, setNewDueDate] = useState('')
   const [activeTab, setActiveTab] = useState('All')
+  const [searchQuery, setSearchQuery] = useState('')
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
@@ -173,11 +187,13 @@ export default function TasksPage() {
       category: newCategory,
       status: 'todo',
       notes: '',
+      dueDate: newDueDate || '',
       createdAt: now,
       updatedAt: now,
     }
     upsertTask(task)
     setNewText('')
+    setNewDueDate('')
     try { localStorage.setItem(LAST_CATEGORY_KEY, newCategory) } catch {}
     inputRef.current?.focus()
   }
@@ -218,6 +234,12 @@ export default function TasksPage() {
     upsertTask({ ...task, notes, updatedAt: new Date().toISOString() })
   }
 
+  const updateDueDate = (id: string, dueDate: string) => {
+    const task = tasks.find(t => t.id === id)
+    if (!task) return
+    upsertTask({ ...task, dueDate, updatedAt: new Date().toISOString() })
+  }
+
   const toggleNotes = (id: string) => {
     setExpandedNotes(prev => {
       const next = new Set(prev)
@@ -227,9 +249,11 @@ export default function TasksPage() {
   }
 
   // Filter
-  const filtered = tasks.filter(t =>
-    activeTab === 'All' ? true : t.category === activeTab
-  )
+  const filtered = tasks.filter(t => {
+    const matchesCategory = activeTab === 'All' ? true : t.category === activeTab
+    const matchesSearch = searchQuery === '' ? true : t.text.toLowerCase().includes(searchQuery.toLowerCase())
+    return matchesCategory && matchesSearch
+  })
 
   // Sort + group
   const sortFn = (a: Task, b: Task) => {
@@ -319,7 +343,7 @@ export default function TasksPage() {
               className="w-full sm:flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-3 text-base text-white placeholder-gray-600 focus:outline-none focus:border-white/20 focus:bg-white/[0.08] transition-colors min-h-[44px]"
               style={{ fontSize: '16px' }}
             />
-            {/* Category + Add button row */}
+            {/* Category + Due Date + Add button row */}
             <div className="flex gap-2">
               <select
                 value={newCategory}
@@ -334,6 +358,13 @@ export default function TasksPage() {
                   <option key={c} value={c} className="bg-[#1a1a1a]">{c}</option>
                 ))}
               </select>
+              <input
+                type="date"
+                value={newDueDate}
+                onChange={e => setNewDueDate(e.target.value)}
+                className="bg-white/5 border border-white/10 rounded-lg px-2 py-3 text-sm text-gray-300 focus:outline-none focus:border-white/20 transition-colors cursor-pointer min-h-[44px]"
+                style={{ fontSize: '16px' }}
+              />
               <button
                 onClick={addTask}
                 className="bg-white text-black text-sm font-semibold px-5 py-3 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-colors min-h-[44px] whitespace-nowrap"
@@ -341,6 +372,29 @@ export default function TasksPage() {
                 Add
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* Search bar */}
+        <div className="max-w-2xl mx-auto px-4 pb-3">
+          <div className="relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search tasks..."
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white/20 focus:bg-white/[0.08] transition-colors pr-8"
+              style={{ fontSize: '16px' }}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 text-lg leading-none"
+                aria-label="Clear search"
+              >
+                ×
+              </button>
+            )}
           </div>
         </div>
 
@@ -390,7 +444,7 @@ export default function TasksPage() {
         {/* Active tasks */}
         {loaded && activeTasks.length === 0 && doneTasks.length === 0 && (
           <div className="text-center py-16 text-gray-600 text-sm">
-            No tasks yet. Type above and hit Enter.
+            {searchQuery ? 'No tasks match your search.' : 'No tasks yet. Type above and hit Enter.'}
           </div>
         )}
 
@@ -413,6 +467,7 @@ export default function TasksPage() {
             onDelete={() => deleteTask(task.id)}
             onToggleNotes={() => toggleNotes(task.id)}
             onUpdateNote={(notes) => updateNote(task.id, notes)}
+            onUpdateDueDate={(dueDate) => updateDueDate(task.id, dueDate)}
           />
         ))}
 
@@ -449,6 +504,7 @@ export default function TasksPage() {
                 onDelete={() => deleteTask(task.id)}
                 onToggleNotes={() => toggleNotes(task.id)}
                 onUpdateNote={(notes) => updateNote(task.id, notes)}
+                onUpdateDueDate={(dueDate) => updateDueDate(task.id, dueDate)}
                 isDone
               />
             ))}
@@ -473,6 +529,7 @@ interface TaskRowProps {
   onDelete: () => void
   onToggleNotes: () => void
   onUpdateNote: (notes: string) => void
+  onUpdateDueDate: (dueDate: string) => void
   isDone?: boolean
 }
 
@@ -481,7 +538,7 @@ function TaskRow({
   isNotesExpanded,
   onCycleStatus, onStartEdit, onEditChange,
   onEditCommit, onEditKeyDown, onDelete,
-  onToggleNotes, onUpdateNote,
+  onToggleNotes, onUpdateNote, onUpdateDueDate,
   isDone
 }: TaskRowProps) {
   const status = getStatusInfo(task.status)
@@ -524,7 +581,7 @@ function TaskRow({
           </span>
         )}
 
-        {/* Meta row: category + date */}
+        {/* Meta row: category + date + due date */}
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-[11px] text-gray-600 bg-white/5 px-2 py-0.5 rounded-full">
             {task.category}
@@ -532,6 +589,17 @@ function TaskRow({
           <span className="text-[11px] text-gray-700">
             {formatDate(task.createdAt)}
           </span>
+          {task.dueDate && (
+            <span className={`text-[11px] px-2 py-0.5 rounded-full flex items-center gap-1 ${
+              isOverdue(task.dueDate) && task.status !== 'done' && task.status !== 'disregard'
+                ? 'bg-red-500/20 text-red-400'
+                : isDueSoon(task.dueDate) && task.status !== 'done' && task.status !== 'disregard'
+                ? 'bg-amber-500/20 text-amber-400'
+                : 'bg-white/5 text-gray-500'
+            }`}>
+              📅 {formatDate(task.dueDate)}
+            </span>
+          )}
         </div>
 
         {/* Notes toggle button */}
@@ -548,14 +616,26 @@ function TaskRow({
 
         {/* Expandable notes area */}
         {isNotesExpanded && (
-          <textarea
-            className="mt-1 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-600 resize-none focus:outline-none focus:border-white/20"
-            style={{ fontSize: '16px', minHeight: '80px' }}
-            placeholder="Add a note or update..."
-            value={task.notes || ''}
-            onChange={e => onUpdateNote(e.target.value)}
-            onKeyDown={e => e.stopPropagation()}
-          />
+          <>
+            <textarea
+              className="mt-1 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-600 resize-none focus:outline-none focus:border-white/20"
+              style={{ fontSize: '16px', minHeight: '80px' }}
+              placeholder="Add a note or update..."
+              value={task.notes || ''}
+              onChange={e => onUpdateNote(e.target.value)}
+              onKeyDown={e => e.stopPropagation()}
+            />
+            <div className="mt-2 flex items-center gap-2">
+              <label className="text-xs text-gray-600">Due:</label>
+              <input
+                type="date"
+                value={task.dueDate || ''}
+                onChange={e => onUpdateDueDate(e.target.value)}
+                className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-gray-300 focus:outline-none"
+                style={{ fontSize: '16px' }}
+              />
+            </div>
+          </>
         )}
       </div>
 
