@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { db, waitForAuth } from '@/lib/firebase'
-import { collection, doc, setDoc, deleteDoc, onSnapshot, query, orderBy } from 'firebase/firestore'
+import { collection, doc, setDoc, deleteDoc, onSnapshot, getDocs, query, orderBy } from 'firebase/firestore'
 
 interface Task {
   id: string
@@ -119,33 +119,52 @@ export default function TasksPage() {
     } catch {}
   }, [])
 
-  // Start Firestore listener immediately (serves from offline cache),
-  // auth runs in parallel — retries if it fires before auth is ready
+  // Load tasks: real-time listener with HTTP fallback for iOS Safari
   useEffect(() => {
     let unsubscribeSnapshot: (() => void) | null = null
+    let timeoutId: ReturnType<typeof setTimeout>
+    let settled = false
 
-    const subscribe = () => {
-      const q = query(collection(db, 'tasks'), orderBy('createdAt', 'desc'))
-      unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
-        const docs = snapshot.docs.map(d => d.data() as Task)
-        setTasks(docs)
-        setLoaded(true)
-      }, (error) => {
-        console.error('Firestore error:', error)
-        // If auth wasn't ready, wait for it then retry
-        waitForAuth().then(() => {
-          if (!unsubscribeSnapshot) subscribe()
-        })
-        setLoaded(true)
-      })
+    const q = query(collection(db, 'tasks'), orderBy('createdAt', 'desc'))
+
+    const settle = (docs: Task[]) => {
+      if (settled) return
+      settled = true
+      clearTimeout(timeoutId)
+      setTasks(docs)
+      setLoaded(true)
     }
 
-    // Kick off auth in background so it's ready for writes
+    // Start real-time listener
+    unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
+      const docs = snapshot.docs.map(d => d.data() as Task)
+      settle(docs)
+      // Keep updating after first load
+      setTasks(docs)
+    }, (error) => {
+      console.error('Firestore snapshot error:', error)
+      settle([])
+    })
+
+    // iOS Safari fallback: if onSnapshot hasn't responded in 5s, use getDocs (HTTP)
+    timeoutId = setTimeout(async () => {
+      if (settled) return
+      try {
+        await waitForAuth()
+        const snapshot = await getDocs(q)
+        const docs = snapshot.docs.map(d => d.data() as Task)
+        settle(docs)
+      } catch (e) {
+        console.error('Fallback getDocs failed:', e)
+        settle([])
+      }
+    }, 5000)
+
+    // Kick off auth in background
     waitForAuth().catch(() => {})
-    // Start listening immediately
-    subscribe()
 
     return () => {
+      clearTimeout(timeoutId)
       if (unsubscribeSnapshot) unsubscribeSnapshot()
     }
   }, [])
