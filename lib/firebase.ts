@@ -13,7 +13,7 @@ const firebaseConfig = {
 }
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
-export const db = getFirestore(app)
+export const db = getFirestore(app, 'default') // named database 'default' (not the legacy '(default)')
 export const auth = getAuth(app)
 
 // Shared tasks account — email/password is more reliable than anonymous on iOS Safari
