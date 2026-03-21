@@ -3,13 +3,13 @@ import { getFirestore } from 'firebase/firestore'
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDYI4n7hqe--hqg3NQDlYGIBg6KDnAloo0",
-  authDomain: "sb-travel-d2af7.firebaseapp.com",
-  projectId: "sb-travel-d2af7",
-  storageBucket: "sb-travel-d2af7.firebasestorage.app",
-  messagingSenderId: "547651495355",
-  appId: "1:547651495355:web:1e002552e5464d45ebd09e",
-  measurementId: "G-K28KEYR62L"
+  apiKey: "AIzaSyCyqUjPKCr7eKzsMoyCTfEtMiLuQ6wZqJI",
+  authDomain: "juan-tasks-8411c.firebaseapp.com",
+  projectId: "juan-tasks-8411c",
+  storageBucket: "juan-tasks-8411c.firebasestorage.app",
+  messagingSenderId: "99879539688",
+  appId: "1:99879539688:web:b6ccf116b7962551ee0a5d",
+  measurementId: "G-8PM0M1LS2F"
 }
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
