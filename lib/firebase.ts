@@ -1,6 +1,6 @@
 import { initializeApp, getApps } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth'
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
 
 const firebaseConfig = {
   apiKey: "AIzaSyCyqUjPKCr7eKzsMoyCTfEtMiLuQ6wZqJI",
@@ -16,7 +16,10 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 export const db = getFirestore(app)
 export const auth = getAuth(app)
 
-// Returns a promise that resolves once the user is signed in
+// Sign in with a shared tasks account — more reliable than anonymous on iOS Safari
+const TASKS_EMAIL = 'tasks@sbtasks.app'
+const TASKS_PASS = 'sb8116tasks'
+
 export const waitForAuth = (): Promise<void> => {
   return new Promise((resolve) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -24,11 +27,11 @@ export const waitForAuth = (): Promise<void> => {
         unsubscribe()
         resolve()
       } else {
-        signInAnonymously(auth).catch(() => {})
+        signInWithEmailAndPassword(auth, TASKS_EMAIL, TASKS_PASS).catch(() => {})
       }
     })
   })
 }
 
-// Keep ensureAuth for backward compat
-export const ensureAuth = () => signInAnonymously(auth).catch(() => {})
+export const ensureAuth = () =>
+  signInWithEmailAndPassword(auth, TASKS_EMAIL, TASKS_PASS).catch(() => {})
