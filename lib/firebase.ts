@@ -1,5 +1,5 @@
 import { initializeApp, getApps } from 'firebase/app'
-import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore'
+import { initializeFirestore, getFirestore, persistentLocalCache, persistentSingleTabManager } from 'firebase/firestore'
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth'
 
 const firebaseConfig = {
@@ -12,20 +12,20 @@ const firebaseConfig = {
   measurementId: "G-8PM0M1LS2F"
 }
 
-let db: ReturnType<typeof initializeFirestore>
+let app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
 
-if (getApps().length === 0) {
-  const app = initializeApp(firebaseConfig)
+let db: ReturnType<typeof initializeFirestore>
+try {
   db = initializeFirestore(app, {
-    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+    localCache: persistentLocalCache({ tabManager: persistentSingleTabManager() })
   })
-} else {
-  db = getFirestore(getApps()[0]) as ReturnType<typeof initializeFirestore>
+} catch {
+  db = getFirestore(app) as ReturnType<typeof initializeFirestore>
 }
 
 export { db }
 
-export const auth = getAuth(getApps()[0])
+export const auth = getAuth(app)
 
 // Returns a promise that resolves once the user is signed in
 export const waitForAuth = (): Promise<void> => {

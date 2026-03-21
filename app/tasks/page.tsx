@@ -119,11 +119,12 @@ export default function TasksPage() {
     } catch {}
   }, [])
 
-  // Ensure auth then subscribe to Firestore
+  // Start Firestore listener immediately (serves from offline cache),
+  // auth runs in parallel — retries if it fires before auth is ready
   useEffect(() => {
     let unsubscribeSnapshot: (() => void) | null = null
 
-    waitForAuth().then(() => {
+    const subscribe = () => {
       const q = query(collection(db, 'tasks'), orderBy('createdAt', 'desc'))
       unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
         const docs = snapshot.docs.map(d => d.data() as Task)
@@ -131,9 +132,18 @@ export default function TasksPage() {
         setLoaded(true)
       }, (error) => {
         console.error('Firestore error:', error)
+        // If auth wasn't ready, wait for it then retry
+        waitForAuth().then(() => {
+          if (!unsubscribeSnapshot) subscribe()
+        })
         setLoaded(true)
       })
-    })
+    }
+
+    // Kick off auth in background so it's ready for writes
+    waitForAuth().catch(() => {})
+    // Start listening immediately
+    subscribe()
 
     return () => {
       if (unsubscribeSnapshot) unsubscribeSnapshot()
