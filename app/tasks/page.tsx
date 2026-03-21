@@ -174,52 +174,30 @@ export default function TasksPage() {
     } catch {}
   }, [])
 
-  // Load tasks: real-time listener with HTTP fallback for iOS Safari
+  // Load tasks: wait for auth first, then start real-time listener
   useEffect(() => {
     let unsubscribeSnapshot: (() => void) | null = null
-    let timeoutId: ReturnType<typeof setTimeout>
-    let settled = false
+    let cancelled = false
 
     const q = query(collection(db, 'tasks'), orderBy('createdAt', 'desc'))
 
-    const settle = (docs: Task[]) => {
-      if (settled) return
-      settled = true
-      clearTimeout(timeoutId)
-      setTasks(docs)
-      setLoaded(true)
-    }
+    waitForAuth().then(() => {
+      if (cancelled) return
 
-    // Start real-time listener
-    unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
-      const docs = snapshot.docs.map(d => d.data() as Task)
-      settle(docs)
-      // Keep updating after first load
-      setTasks(docs)
-    }, (error) => {
-      console.error('Firestore snapshot error:', error)
-      settle([])
+      unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
+        const docs = snapshot.docs.map(d => d.data() as Task)
+        setTasks(docs)
+        setLoaded(true)
+      }, (error) => {
+        console.error('Firestore snapshot error:', error)
+        setLoaded(true)
+      })
+    }).catch(() => {
+      if (!cancelled) setLoaded(true)
     })
 
-    // iOS Safari fallback: if onSnapshot hasn't responded in 5s, use getDocs (HTTP)
-    timeoutId = setTimeout(async () => {
-      if (settled) return
-      try {
-        await waitForAuth()
-        const snapshot = await getDocs(q)
-        const docs = snapshot.docs.map(d => d.data() as Task)
-        settle(docs)
-      } catch (e) {
-        console.error('Fallback getDocs failed:', e)
-        settle([])
-      }
-    }, 5000)
-
-    // Kick off auth in background
-    waitForAuth().catch(() => {})
-
     return () => {
-      clearTimeout(timeoutId)
+      cancelled = true
       if (unsubscribeSnapshot) unsubscribeSnapshot()
     }
   }, [])
