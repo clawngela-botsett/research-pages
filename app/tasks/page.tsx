@@ -73,23 +73,78 @@ function exportCSV(tasks: Task[]) {
 
 const TASK_PIN = 'sb8116'
 
+const PIN_LOCKOUT_KEY = 'task_pin_attempts'
+const PIN_MAX_ATTEMPTS = 5
+const PIN_LOCKOUT_MS = 15 * 60 * 1000 // 15 minutes
+
+function getPinLockoutState(): { count: number; lockedUntil: number } {
+  try {
+    return JSON.parse(localStorage.getItem(PIN_LOCKOUT_KEY) || '{"count":0,"lockedUntil":0}')
+  } catch { return { count: 0, lockedUntil: 0 } }
+}
+
+function setPinLockoutState(count: number, lockedUntil: number) {
+  try { localStorage.setItem(PIN_LOCKOUT_KEY, JSON.stringify({ count, lockedUntil })) } catch {}
+}
+
 export default function TasksPage() {
   const [unlocked, setUnlocked] = useState(false)
   const [pin, setPin] = useState('')
   const [pinError, setPinError] = useState(false)
+  const [pinLockoutUntil, setPinLockoutUntil] = useState(0)
+  const [pinAttemptsLeft, setPinAttemptsLeft] = useState(PIN_MAX_ATTEMPTS)
+  const [pinTimeLeft, setPinTimeLeft] = useState('')
 
   // Check if already unlocked in this session
   useEffect(() => {
     if (sessionStorage.getItem('tasks-unlocked') === 'true') {
       setUnlocked(true)
+      return
     }
+    const state = getPinLockoutState()
+    if (state.lockedUntil > Date.now()) {
+      setPinLockoutUntil(state.lockedUntil)
+    } else if (state.lockedUntil > 0 && state.lockedUntil <= Date.now()) {
+      setPinLockoutState(0, 0)
+    }
+    setPinAttemptsLeft(PIN_MAX_ATTEMPTS - Math.min(state.count, PIN_MAX_ATTEMPTS))
   }, [])
 
+  useEffect(() => {
+    if (!pinLockoutUntil) return
+    const interval = setInterval(() => {
+      const remaining = pinLockoutUntil - Date.now()
+      if (remaining <= 0) {
+        setPinLockoutUntil(0)
+        setPinLockoutState(0, 0)
+        setPinAttemptsLeft(PIN_MAX_ATTEMPTS)
+        clearInterval(interval)
+      } else {
+        const mins = Math.ceil(remaining / 60000)
+        setPinTimeLeft(`${mins} minute${mins !== 1 ? 's' : ''}`)
+      }
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [pinLockoutUntil])
+
   const handleUnlock = () => {
+    if (pinLockoutUntil > Date.now()) return
     if (pin === TASK_PIN) {
       sessionStorage.setItem('tasks-unlocked', 'true')
+      setPinLockoutState(0, 0)
       setUnlocked(true)
     } else {
+      const state = getPinLockoutState()
+      const newCount = state.count + 1
+      if (newCount >= PIN_MAX_ATTEMPTS) {
+        const lockedUntil = Date.now() + PIN_LOCKOUT_MS
+        setPinLockoutState(newCount, lockedUntil)
+        setPinLockoutUntil(lockedUntil)
+        setPinAttemptsLeft(0)
+      } else {
+        setPinLockoutState(newCount, 0)
+        setPinAttemptsLeft(PIN_MAX_ATTEMPTS - newCount)
+      }
       setPinError(true)
       setPin('')
       setTimeout(() => setPinError(false), 2000)
@@ -306,23 +361,32 @@ export default function TasksPage() {
           <div className="text-3xl mb-6">🔒</div>
           <h1 className="text-white text-xl font-semibold mb-2">Tasks</h1>
           <p className="text-gray-500 text-sm mb-6">Enter your PIN to continue</p>
-          <input
-            type="password"
-            className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-white text-center text-xl tracking-widest focus:outline-none mb-3 ${pinError ? 'border-red-500 animate-pulse' : 'border-white/10 focus:border-white/30'}`}
-            style={{ fontSize: '20px' }}
-            placeholder="••••••"
-            value={pin}
-            onChange={e => setPin(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') handleUnlock() }}
-            autoFocus
-          />
-          <button
-            onClick={handleUnlock}
-            className="w-full bg-white text-black font-semibold py-3 rounded-xl active:scale-95 transition-transform"
-          >
-            Unlock
-          </button>
-          {pinError && <p className="text-red-400 text-sm mt-3">Incorrect PIN</p>}
+          {pinLockoutUntil > Date.now() ? (
+            <div className="text-center mt-4">
+              <p className="text-red-400 text-sm mb-1">Too many failed attempts</p>
+              <p className="text-gray-500 text-xs">Try again in {pinTimeLeft}</p>
+            </div>
+          ) : (
+            <>
+              <input
+                type="password"
+                className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-white text-center text-xl tracking-widest focus:outline-none mb-3 ${pinError ? 'border-red-500 animate-pulse' : 'border-white/10 focus:border-white/30'}`}
+                style={{ fontSize: '20px' }}
+                placeholder="••••••"
+                value={pin}
+                onChange={e => setPin(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') handleUnlock() }}
+                autoFocus
+              />
+              <button
+                onClick={handleUnlock}
+                className="w-full bg-white text-black font-semibold py-3 rounded-xl active:scale-95 transition-transform"
+              >
+                Unlock
+              </button>
+              {pinError && <p className="text-red-400 text-sm mt-3">Incorrect PIN. {pinAttemptsLeft} attempt{pinAttemptsLeft !== 1 ? 's' : ''} remaining.</p>}
+            </>
+          )}
         </div>
       </div>
     )
