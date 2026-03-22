@@ -162,6 +162,8 @@ export default function TasksPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
   const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set())
+  const [completedCollapsed, setCompletedCollapsed] = useState(false)
+  const [disregardedCollapsed, setDisregardedCollapsed] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const editRef = useRef<HTMLInputElement>(null)
   const activeTabRef = useRef<HTMLButtonElement>(null)
@@ -285,9 +287,11 @@ export default function TasksPage() {
   }
 
   const clearCompleted = () => {
-    tasks
-      .filter(t => t.status === 'done' || t.status === 'disregard')
-      .forEach(t => removeTask(t.id))
+    tasks.filter(t => t.status === 'done').forEach(t => removeTask(t.id))
+  }
+
+  const clearDisregarded = () => {
+    tasks.filter(t => t.status === 'disregard').forEach(t => removeTask(t.id))
   }
 
   const updateNote = (id: string, notes: string) => {
@@ -324,7 +328,8 @@ export default function TasksPage() {
   }
 
   const activeTasks = filtered.filter(t => t.status !== 'done' && t.status !== 'disregard').sort(sortFn)
-  const doneTasks = filtered.filter(t => t.status === 'done' || t.status === 'disregard').sort(sortFn)
+  const doneTasks = filtered.filter(t => t.status === 'done').sort(sortFn)
+  const disregardTasks = filtered.filter(t => t.status === 'disregard').sort(sortFn)
 
   // Badge counts (active only)
   const badgeCount = (cat: string) =>
@@ -513,7 +518,7 @@ export default function TasksPage() {
         )}
 
         {/* Active tasks */}
-        {loaded && activeTasks.length === 0 && doneTasks.length === 0 && (
+        {loaded && activeTasks.length === 0 && doneTasks.length === 0 && disregardTasks.length === 0 && (
           <div className="text-center py-16 text-gray-600 text-sm">
             {searchQuery ? 'No tasks match your search.' : 'No tasks yet. Type above and hit Enter.'}
           </div>
@@ -542,13 +547,17 @@ export default function TasksPage() {
           />
         ))}
 
-        {/* Done section */}
+        {/* Completed section */}
         {loaded && doneTasks.length > 0 && (
           <>
             <div className="flex items-center justify-between pt-4 pb-1">
-              <p className="text-xs text-gray-600 uppercase tracking-wider font-medium">
+              <button
+                onClick={() => setCompletedCollapsed(c => !c)}
+                className="flex items-center gap-1.5 text-xs text-gray-500 uppercase tracking-wider font-medium hover:text-gray-300 transition-colors"
+              >
+                <span>{completedCollapsed ? '▸' : '▾'}</span>
                 Completed · {doneTasks.length}
-              </p>
+              </button>
               <button
                 onClick={clearCompleted}
                 className="text-xs text-gray-600 hover:text-red-400 active:text-red-400 transition-colors py-2 px-1 min-h-[36px] flex items-center"
@@ -556,7 +565,51 @@ export default function TasksPage() {
                 Clear completed
               </button>
             </div>
-            {doneTasks.map(task => (
+            {!completedCollapsed && doneTasks.map(task => (
+              <TaskRow
+                key={task.id}
+                task={task}
+                isEditing={editingId === task.id}
+                editText={editText}
+                editRef={editRef}
+                isNotesExpanded={expandedNotes.has(task.id)}
+                onCycleStatus={() => cycleTaskStatus(task.id)}
+                onStartEdit={() => startEdit(task)}
+                onEditChange={setEditText}
+                onEditCommit={() => commitEdit(task.id)}
+                onEditKeyDown={e => {
+                  if (e.key === 'Enter') commitEdit(task.id)
+                  if (e.key === 'Escape') setEditingId(null)
+                }}
+                onDelete={() => deleteTask(task.id)}
+                onToggleNotes={() => toggleNotes(task.id)}
+                onUpdateNote={(notes) => updateNote(task.id, notes)}
+                onUpdateDueDate={(dueDate) => updateDueDate(task.id, dueDate)}
+                isDone
+              />
+            ))}
+          </>
+        )}
+
+        {/* Disregarded section */}
+        {loaded && disregardTasks.length > 0 && (
+          <>
+            <div className="flex items-center justify-between pt-4 pb-1">
+              <button
+                onClick={() => setDisregardedCollapsed(c => !c)}
+                className="flex items-center gap-1.5 text-xs text-zinc-600 uppercase tracking-wider font-medium hover:text-zinc-400 transition-colors"
+              >
+                <span>{disregardedCollapsed ? '▸' : '▾'}</span>
+                Disregarded · {disregardTasks.length}
+              </button>
+              <button
+                onClick={clearDisregarded}
+                className="text-xs text-gray-600 hover:text-red-400 active:text-red-400 transition-colors py-2 px-1 min-h-[36px] flex items-center"
+              >
+                Clear disregarded
+              </button>
+            </div>
+            {!disregardedCollapsed && disregardTasks.map(task => (
               <TaskRow
                 key={task.id}
                 task={task}
@@ -584,6 +637,23 @@ export default function TasksPage() {
       </main>
     </div>
   )
+}
+
+function getCategoryGlow(category: string): { rgb: string; color: string } {
+  const map: Record<string, { rgb: string; color: string }> = {
+    'DOAC':         { rgb: '20,184,166',   color: '#5eead4' }, // teal
+    'Commercial':   { rgb: '59,130,246',   color: '#93c5fd' }, // blue
+    'Speaking':     { rgb: '139,92,246',   color: '#c4b5fd' }, // violet
+    'Private':      { rgb: '249,115,22',   color: '#fdba74' }, // orange
+    'Travel':       { rgb: '16,185,129',   color: '#6ee7b7' }, // emerald
+    'SB Requests':  { rgb: '245,158,11',   color: '#fbbf24' }, // amber
+    'Press/PR':     { rgb: '236,72,153',   color: '#f9a8d4' }, // pink
+    'BTD':          { rgb: '239,68,68',    color: '#fca5a5' }, // red
+    'FounderStory': { rgb: '99,102,241',   color: '#a5b4fc' }, // indigo
+    'Marketing':    { rgb: '6,182,212',    color: '#67e8f9' }, // cyan
+    'Other':        { rgb: '113,113,122',  color: '#d4d4d8' }, // zinc
+  }
+  return map[category] || { rgb: '113,113,122', color: '#d4d4d8' }
 }
 
 interface TaskRowProps {
@@ -654,9 +724,22 @@ function TaskRow({
 
         {/* Meta row: category + date + due date */}
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-[11px] text-gray-600 bg-white/5 px-2 py-0.5 rounded-full">
-            {task.category}
-          </span>
+          {task.category && task.category !== 'All' && (
+            <span style={{
+              background: `rgba(${getCategoryGlow(task.category).rgb},0.15)`,
+              border: `1px solid rgba(${getCategoryGlow(task.category).rgb},0.5)`,
+              boxShadow: `0 0 8px rgba(${getCategoryGlow(task.category).rgb},0.3)`,
+              color: getCategoryGlow(task.category).color,
+              borderRadius: '9999px',
+              padding: '3px 10px',
+              fontSize: '11px',
+              fontWeight: 500,
+              display: 'inline-block',
+              whiteSpace: 'nowrap' as const,
+            }}>
+              {task.category}
+            </span>
+          )}
           <span className="text-[11px] text-gray-700">
             {formatDate(task.createdAt)}
           </span>
