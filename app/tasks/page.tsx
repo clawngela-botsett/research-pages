@@ -341,6 +341,14 @@ export default function TasksPage() {
     upsertTask({ ...task, priority: !task.priority, updatedAt: new Date().toISOString() })
   }
 
+  const cycleCategory = (id: string) => {
+    const task = tasks.find(t => t.id === id)
+    if (!task) return
+    const idx = CATEGORIES.indexOf(task.category)
+    const next = CATEGORIES[(idx + 1) % CATEGORIES.length]
+    upsertTask({ ...task, category: next, updatedAt: new Date().toISOString() })
+  }
+
   const toggleNotes = (id: string) => {
     setExpandedNotes(prev => {
       const next = new Set(prev)
@@ -644,6 +652,7 @@ export default function TasksPage() {
             onUpdateNote={(notes) => updateNote(task.id, notes)}
             onUpdateDueDate={(dueDate) => updateDueDate(task.id, dueDate)}
             onTogglePriority={() => togglePriority(task.id)}
+            onCycleCategory={() => cycleCategory(task.id)}
           />
         ))}
 
@@ -693,6 +702,7 @@ export default function TasksPage() {
                 onUpdateNote={(notes) => updateNote(task.id, notes)}
                 onUpdateDueDate={(dueDate) => updateDueDate(task.id, dueDate)}
                 onTogglePriority={() => togglePriority(task.id)}
+            onCycleCategory={() => cycleCategory(task.id)}
                 isDone
               />
             ))}
@@ -745,6 +755,7 @@ export default function TasksPage() {
                 onUpdateNote={(notes) => updateNote(task.id, notes)}
                 onUpdateDueDate={(dueDate) => updateDueDate(task.id, dueDate)}
                 onTogglePriority={() => togglePriority(task.id)}
+            onCycleCategory={() => cycleCategory(task.id)}
                 isDone
               />
             ))}
@@ -792,6 +803,7 @@ interface TaskRowProps {
   isDone?: boolean
   isLeaving?: boolean
   onTogglePriority?: () => void
+  onCycleCategory?: () => void
 }
 
 function TaskRow({
@@ -800,7 +812,7 @@ function TaskRow({
   onCycleStatus, onStartEdit, onEditChange,
   onEditCommit, onEditKeyDown, onDelete,
   onToggleNotes, onUpdateNote, onUpdateDueDate,
-  isDone, isLeaving, onTogglePriority
+  isDone, isLeaving, onTogglePriority, onCycleCategory
 }: TaskRowProps) {
   const status = getStatusInfo(task.status)
 
@@ -872,20 +884,24 @@ function TaskRow({
         {/* Meta row: category + date + due date */}
         <div className="flex items-center gap-2 flex-wrap">
           {task.category && task.category !== 'All' && (
-            <span style={{
-              background: `rgba(${getCategoryGlow(task.category).rgb},0.15)`,
-              border: `1px solid rgba(${getCategoryGlow(task.category).rgb},0.5)`,
-              boxShadow: `0 0 8px rgba(${getCategoryGlow(task.category).rgb},0.3)`,
-              color: getCategoryGlow(task.category).color,
-              borderRadius: '9999px',
-              padding: '3px 10px',
-              fontSize: '11px',
-              fontWeight: 500,
-              display: 'inline-block',
-              whiteSpace: 'nowrap' as const,
-            }}>
+            <button
+              onClick={onCycleCategory}
+              title="Tap to change category"
+              style={{
+                background: `rgba(${getCategoryGlow(task.category).rgb},0.15)`,
+                border: `1px solid rgba(${getCategoryGlow(task.category).rgb},0.5)`,
+                boxShadow: `0 0 8px rgba(${getCategoryGlow(task.category).rgb},0.3)`,
+                color: getCategoryGlow(task.category).color,
+                borderRadius: '9999px',
+                padding: '3px 10px',
+                fontSize: '11px',
+                fontWeight: 500,
+                display: 'inline-block',
+                whiteSpace: 'nowrap' as const,
+                cursor: 'pointer',
+              }}>
               {task.category}
-            </span>
+            </button>
           )}
           <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
             {formatDate(task.createdAt)}
