@@ -16,7 +16,7 @@ interface Task {
   updatedAt: string
 }
 
-const CATEGORIES = ['DOAC', 'Commercial', 'Speaking', 'Private', 'Travel', 'SB Requests', 'Press/PR', 'BTD', 'FounderStory', 'Marketing', 'Other']
+const CATEGORIES = ['DOAC', 'Commercial', 'Speaking', 'Private', 'Travel', 'SB Requests', 'Press/PR', 'BTD', 'FounderStory', 'Marketing', 'FS', 'JAO', 'Other']
 const LAST_CATEGORY_KEY = 'juan-tasks-last-category'
 
 const STATUSES = [
@@ -767,6 +767,8 @@ function getCategoryGlow(category: string): { rgb: string; color: string } {
     'BTD':          { rgb: '239,68,68',    color: '#fca5a5' }, // red
     'FounderStory': { rgb: '99,102,241',   color: '#a5b4fc' }, // indigo
     'Marketing':    { rgb: '6,182,212',    color: '#67e8f9' }, // cyan
+    'FS':           { rgb: '236,72,153',   color: '#f9a8d4' }, // pink
+    'JAO':          { rgb: '251,146,60',   color: '#fed7aa' }, // orange
     'Other':        { rgb: '113,113,122',  color: '#d4d4d8' }, // zinc
   }
   return map[category] || { rgb: '113,113,122', color: '#d4d4d8' }
