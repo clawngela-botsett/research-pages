@@ -376,22 +376,26 @@ export default function TasksPage() {
 
   if (!unlocked) {
     return (
-      <div className="min-h-screen bg-[#0d0d0f] flex items-center justify-center px-4">
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ background: '#020e14' }}>
         <div className="w-full max-w-xs text-center">
           <div className="text-3xl mb-6">🔒</div>
-          <h1 className="text-white text-xl font-semibold mb-2">Tasks</h1>
-          <p className="text-gray-500 text-sm mb-6">Enter your PIN to continue</p>
+          <h1 className="text-white text-xl font-semibold mb-2">To Do List</h1>
+          <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.35)' }}>Enter your PIN to continue</p>
           {pinLockoutUntil > Date.now() ? (
             <div className="text-center mt-4">
               <p className="text-red-400 text-sm mb-1">Too many failed attempts</p>
-              <p className="text-gray-500 text-xs">Try again in {pinTimeLeft}</p>
+              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Try again in {pinTimeLeft}</p>
             </div>
           ) : (
             <>
               <input
                 type="password"
-                className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-white text-center text-xl tracking-widest focus:outline-none mb-3 ${pinError ? 'border-red-500 animate-pulse' : 'border-white/10 focus:border-white/30'}`}
-                style={{ fontSize: '20px' }}
+                className={`w-full rounded-xl px-4 py-3 text-white text-center text-xl tracking-widest focus:outline-none mb-3 transition-colors ${pinError ? 'animate-pulse' : ''}`}
+                style={{
+                  background: '#061c26',
+                  border: `1px solid ${pinError ? 'rgb(239,68,68)' : 'rgba(240,117,88,0.35)'}`,
+                  fontSize: '20px',
+                }}
                 placeholder="••••••"
                 value={pin}
                 onChange={e => setPin(e.target.value)}
@@ -400,7 +404,8 @@ export default function TasksPage() {
               />
               <button
                 onClick={handleUnlock}
-                className="w-full bg-white text-black font-semibold py-3 rounded-xl active:scale-95 transition-transform"
+                className="w-full font-semibold py-3 rounded-xl active:scale-95 transition-transform text-white"
+                style={{ background: '#f07558' }}
               >
                 Unlock
               </button>
@@ -413,14 +418,17 @@ export default function TasksPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-gray-100 overflow-x-hidden">
+    <div className="min-h-screen text-white overflow-x-hidden" style={{ background: '#020e14' }}>
       {/* Header */}
-      <header className="sticky top-0 z-20 bg-[#0f0f0f]/95 backdrop-blur border-b border-white/5">
+      <header
+        className="sticky top-0 z-20 backdrop-blur border-b"
+        style={{ background: 'rgba(2,14,20,0.95)', borderColor: 'rgba(240,117,88,0.15)' }}
+      >
         {/* Title row */}
         <div className="max-w-2xl mx-auto px-4 pt-4 pb-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <h1 className="text-xl font-semibold tracking-tight text-white whitespace-nowrap">Tasks</h1>
-            <span className="text-sm text-gray-500 whitespace-nowrap">
+            <h1 className="text-xl font-semibold tracking-tight text-white whitespace-nowrap">To Do List</h1>
+            <span className="text-sm whitespace-nowrap" style={{ color: 'rgba(240,117,88,0.7)' }}>
               {activeCount} active
             </span>
           </div>
@@ -428,14 +436,28 @@ export default function TasksPage() {
             {/* Sort toggle */}
             <button
               onClick={() => setSortOrder(s => s === 'newest' ? 'oldest' : 'newest')}
-              className="text-xs text-gray-500 hover:text-gray-300 transition-colors px-3 py-2 min-h-[36px] rounded border border-white/5 hover:border-white/10 flex items-center"
+              className="text-xs transition-colors px-3 py-2 min-h-[36px] rounded-xl flex items-center"
+              style={{
+                background: '#061c26',
+                border: '1px solid rgba(240,117,88,0.15)',
+                color: 'rgba(255,255,255,0.6)',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
             >
               {sortOrder === 'newest' ? '↓ New' : '↑ Old'}
             </button>
             {/* Export CSV */}
             <button
               onClick={() => exportCSV(tasks)}
-              className="text-xs text-gray-500 hover:text-gray-300 transition-colors px-3 py-2 min-h-[36px] rounded border border-white/5 hover:border-white/10 flex items-center whitespace-nowrap"
+              className="text-xs transition-colors px-3 py-2 min-h-[36px] rounded-xl flex items-center whitespace-nowrap"
+              style={{
+                background: '#061c26',
+                border: '1px solid rgba(240,117,88,0.15)',
+                color: 'rgba(255,255,255,0.6)',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
             >
               Export CSV
             </button>
@@ -453,8 +475,14 @@ export default function TasksPage() {
               onChange={e => setNewText(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && addTask()}
               placeholder="Add a task…"
-              className="w-full sm:flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-3 text-base text-white placeholder-gray-600 focus:outline-none focus:border-white/20 focus:bg-white/[0.08] transition-colors min-h-[44px]"
-              style={{ fontSize: '16px' }}
+              className="w-full sm:flex-1 rounded-xl px-3 py-3 text-base text-white focus:outline-none transition-colors min-h-[44px]"
+              style={{
+                background: '#061c26',
+                border: '1px solid rgba(240,117,88,0.2)',
+                fontSize: '16px',
+              }}
+              onFocus={e => (e.currentTarget.style.borderColor = 'rgba(240,117,88,0.5)')}
+              onBlur={e => (e.currentTarget.style.borderColor = 'rgba(240,117,88,0.2)')}
             />
             {/* Category + Due Date + Add button row */}
             <div className="flex gap-2">
@@ -464,23 +492,36 @@ export default function TasksPage() {
                   setNewCategory(e.target.value)
                   try { localStorage.setItem(LAST_CATEGORY_KEY, e.target.value) } catch {}
                 }}
-                className="flex-1 sm:flex-none bg-white/5 border border-white/10 rounded-lg px-2 py-3 text-sm text-gray-300 focus:outline-none focus:border-white/20 transition-colors cursor-pointer min-h-[44px]"
-                style={{ fontSize: '16px' }}
+                className="flex-1 sm:flex-none rounded-xl px-2 py-3 text-sm focus:outline-none transition-colors cursor-pointer min-h-[44px]"
+                style={{
+                  background: '#061c26',
+                  border: '1px solid rgba(240,117,88,0.2)',
+                  color: 'rgba(255,255,255,0.7)',
+                  fontSize: '16px',
+                }}
               >
                 {CATEGORIES.map(c => (
-                  <option key={c} value={c} className="bg-[#1a1a1a]">{c}</option>
+                  <option key={c} value={c} style={{ background: '#061c26' }}>{c}</option>
                 ))}
               </select>
               <input
                 type="date"
                 value={newDueDate}
                 onChange={e => setNewDueDate(e.target.value)}
-                className="bg-white/5 border border-white/10 rounded-lg px-2 py-3 text-sm text-gray-300 focus:outline-none focus:border-white/20 transition-colors cursor-pointer min-h-[44px]"
-                style={{ fontSize: '16px' }}
+                className="rounded-xl px-2 py-3 text-sm focus:outline-none transition-colors cursor-pointer min-h-[44px]"
+                style={{
+                  background: '#061c26',
+                  border: '1px solid rgba(240,117,88,0.2)',
+                  color: 'rgba(255,255,255,0.7)',
+                  fontSize: '16px',
+                }}
               />
               <button
                 onClick={addTask}
-                className="bg-white text-black text-sm font-semibold px-5 py-3 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-colors min-h-[44px] whitespace-nowrap"
+                className="text-sm font-semibold px-5 py-3 rounded-xl active:opacity-80 transition-colors min-h-[44px] whitespace-nowrap text-white"
+                style={{ background: '#f07558' }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
               >
                 Add
               </button>
@@ -496,13 +537,22 @@ export default function TasksPage() {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search tasks..."
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white/20 focus:bg-white/[0.08] transition-colors pr-8"
-              style={{ fontSize: '16px' }}
+              className="w-full rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none transition-colors pr-8"
+              style={{
+                background: '#061c26',
+                border: '1px solid rgba(240,117,88,0.2)',
+                fontSize: '16px',
+              }}
+              onFocus={e => (e.currentTarget.style.borderColor = 'rgba(240,117,88,0.5)')}
+              onBlur={e => (e.currentTarget.style.borderColor = 'rgba(240,117,88,0.2)')}
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 text-lg leading-none"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-lg leading-none transition-colors"
+                style={{ color: 'rgba(255,255,255,0.35)' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}
                 aria-label="Clear search"
               >
                 ×
@@ -525,17 +575,28 @@ export default function TasksPage() {
                 key={tab}
                 ref={isActive ? activeTabRef : undefined}
                 onClick={() => setActiveTab(tab)}
-                className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-colors min-h-[36px] ${
-                  isActive
-                    ? 'bg-white text-black'
-                    : 'text-gray-500 hover:text-gray-300 hover:bg-white/5 active:bg-white/10'
-                }`}
+                className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-colors min-h-[36px]"
+                style={isActive ? {
+                  background: '#f07558',
+                  color: 'white',
+                } : {
+                  color: 'rgba(255,255,255,0.4)',
+                }}
+                onMouseEnter={e => { if (!isActive) { e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.background = '#061c26' } }}
+                onMouseLeave={e => { if (!isActive) { e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; e.currentTarget.style.background = 'transparent' } }}
               >
                 {tab}
                 {count > 0 && (
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
-                    isActive ? 'bg-black/15 text-black' : 'bg-white/10 text-gray-400'
-                  }`}>
+                  <span
+                    className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
+                    style={isActive ? {
+                      background: 'rgba(0,0,0,0.2)',
+                      color: 'white',
+                    } : {
+                      background: 'rgba(240,117,88,0.15)',
+                      color: 'rgba(240,117,88,0.8)',
+                    }}
+                  >
                     {count}
                   </span>
                 )}
@@ -549,14 +610,14 @@ export default function TasksPage() {
       <main className="max-w-2xl mx-auto px-3 sm:px-4 py-4 space-y-1">
         {/* Loading state */}
         {!loaded && (
-          <div className="text-center py-16 text-gray-600 text-sm">
+          <div className="text-center py-16 text-sm" style={{ color: 'rgba(255,255,255,0.2)' }}>
             Loading…
           </div>
         )}
 
         {/* Active tasks */}
         {loaded && activeTasks.length === 0 && doneTasks.length === 0 && disregardTasks.length === 0 && (
-          <div className="text-center py-16 text-gray-600 text-sm">
+          <div className="text-center py-16 text-sm" style={{ color: 'rgba(255,255,255,0.2)' }}>
             {searchQuery ? 'No tasks match your search.' : 'No tasks yet. Type above and hit Enter.'}
           </div>
         )}
@@ -592,18 +653,25 @@ export default function TasksPage() {
             <div className="flex items-center justify-between pt-4 pb-1">
               <button
                 onClick={() => setCompletedCollapsed(c => !c)}
-                className="flex items-center gap-1.5 text-xs text-gray-500 uppercase tracking-wider font-medium hover:text-gray-300 transition-colors"
+                className="flex items-center gap-1.5 text-xs uppercase tracking-wider font-medium transition-colors"
+                style={{ color: 'rgba(255,255,255,0.3)' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
               >
                 <span>{completedCollapsed ? '▸' : '▾'}</span>
                 Completed · {doneTasks.length}
               </button>
               <button
                 onClick={clearCompleted}
-                className="text-xs text-gray-600 hover:text-red-400 active:text-red-400 transition-colors py-2 px-1 min-h-[36px] flex items-center"
+                className="text-xs transition-colors py-2 px-1 min-h-[36px] flex items-center"
+                style={{ color: 'rgba(255,255,255,0.3)' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'rgba(240,117,88,0.8)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
               >
                 Clear completed
               </button>
             </div>
+            <div className="border-t" style={{ borderColor: 'rgba(240,117,88,0.1)' }} />
             {!completedCollapsed && doneTasks.map(task => (
               <TaskRow
                 key={task.id}
@@ -624,7 +692,7 @@ export default function TasksPage() {
                 onToggleNotes={() => toggleNotes(task.id)}
                 onUpdateNote={(notes) => updateNote(task.id, notes)}
                 onUpdateDueDate={(dueDate) => updateDueDate(task.id, dueDate)}
-            onTogglePriority={() => togglePriority(task.id)}
+                onTogglePriority={() => togglePriority(task.id)}
                 isDone
               />
             ))}
@@ -637,18 +705,25 @@ export default function TasksPage() {
             <div className="flex items-center justify-between pt-4 pb-1">
               <button
                 onClick={() => setDisregardedCollapsed(c => !c)}
-                className="flex items-center gap-1.5 text-xs text-zinc-600 uppercase tracking-wider font-medium hover:text-zinc-400 transition-colors"
+                className="flex items-center gap-1.5 text-xs uppercase tracking-wider font-medium transition-colors"
+                style={{ color: 'rgba(255,255,255,0.3)' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
               >
                 <span>{disregardedCollapsed ? '▸' : '▾'}</span>
                 Disregarded · {disregardTasks.length}
               </button>
               <button
                 onClick={clearDisregarded}
-                className="text-xs text-gray-600 hover:text-red-400 active:text-red-400 transition-colors py-2 px-1 min-h-[36px] flex items-center"
+                className="text-xs transition-colors py-2 px-1 min-h-[36px] flex items-center"
+                style={{ color: 'rgba(255,255,255,0.3)' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'rgba(240,117,88,0.8)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
               >
                 Clear disregarded
               </button>
             </div>
+            <div className="border-t" style={{ borderColor: 'rgba(240,117,88,0.1)' }} />
             {!disregardedCollapsed && disregardTasks.map(task => (
               <TaskRow
                 key={task.id}
@@ -669,7 +744,7 @@ export default function TasksPage() {
                 onToggleNotes={() => toggleNotes(task.id)}
                 onUpdateNote={(notes) => updateNote(task.id, notes)}
                 onUpdateDueDate={(dueDate) => updateDueDate(task.id, dueDate)}
-            onTogglePriority={() => togglePriority(task.id)}
+                onTogglePriority={() => togglePriority(task.id)}
                 isDone
               />
             ))}
@@ -727,14 +802,31 @@ function TaskRow({
 }: TaskRowProps) {
   const status = getStatusInfo(task.status)
 
+  const cardStyle = isLeaving
+    ? { background: '#061c26', border: '1px solid rgba(240,117,88,0.05)', opacity: 0.3, transform: 'scale(0.98)' }
+    : isDone
+    ? { background: '#061c26', border: '1px solid rgba(240,117,88,0.08)', opacity: 0.5 }
+    : { background: '#061c26', border: '1px solid rgba(240,117,88,0.15)' }
+
   return (
-    <div className={`group flex items-start gap-2 px-3 py-3 rounded-lg border transition-all duration-700 ${
-      isLeaving
-        ? 'border-white/[0.03] opacity-30 scale-[0.98]'
-        : isDone
-          ? 'border-white/[0.03] opacity-50 hover:opacity-70'
-          : 'border-white/5 hover:border-white/10 hover:bg-white/[0.02] active:bg-white/[0.03]'
-    }`}>
+    <div
+      className="group flex items-start gap-2 px-3 py-3 rounded-xl transition-all duration-700"
+      style={cardStyle}
+      onMouseEnter={e => {
+        if (!isLeaving) {
+          e.currentTarget.style.borderColor = 'rgba(240,117,88,0.3)'
+          e.currentTarget.style.background = '#071e2b'
+          if (isDone) e.currentTarget.style.opacity = '0.7'
+        }
+      }}
+      onMouseLeave={e => {
+        if (!isLeaving) {
+          e.currentTarget.style.borderColor = isDone ? 'rgba(240,117,88,0.08)' : 'rgba(240,117,88,0.15)'
+          e.currentTarget.style.background = '#061c26'
+          if (isDone) e.currentTarget.style.opacity = '0.5'
+        }
+      }}
+    >
       {/* Status badge — tappable, min 36px height */}
       <button
         onClick={onCycleStatus}
@@ -754,14 +846,22 @@ function TaskRow({
             onChange={e => onEditChange(e.target.value)}
             onBlur={onEditCommit}
             onKeyDown={onEditKeyDown}
-            className="w-full bg-white/10 border border-white/20 rounded px-2 py-1.5 text-white focus:outline-none min-h-[36px]"
-            style={{ fontSize: '16px' }}
+            className="w-full rounded-xl px-2 py-1.5 text-white focus:outline-none min-h-[36px]"
+            style={{
+              background: '#0a2535',
+              border: '1px solid rgba(240,117,88,0.2)',
+              fontSize: '16px',
+            }}
           />
         ) : (
           <span
             onClick={onStartEdit}
-            className={`cursor-text leading-snug ${isDone ? 'line-through text-gray-500' : 'text-gray-100'}`}
-            style={{ fontSize: '15px' }}
+            className="cursor-text leading-snug"
+            style={{
+              fontSize: '15px',
+              color: isDone ? 'rgba(255,255,255,0.3)' : 'white',
+              textDecoration: isDone ? 'line-through' : 'none',
+            }}
           >
             {task.text}
           </span>
@@ -785,7 +885,7 @@ function TaskRow({
               {task.category}
             </span>
           )}
-          <span className="text-[11px] text-gray-700">
+          <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
             {formatDate(task.createdAt)}
           </span>
           {task.dueDate && (
@@ -805,8 +905,11 @@ function TaskRow({
         <button
           onClick={onToggleNotes}
           className={`text-xs mt-1 flex items-center gap-1 transition-colors ${
-            task.notes ? 'text-blue-400' : 'text-gray-600 hover:text-gray-400'
+            task.notes ? 'text-blue-400' : ''
           }`}
+          style={task.notes ? {} : { color: 'rgba(255,255,255,0.3)' }}
+          onMouseEnter={e => { if (!task.notes) e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
+          onMouseLeave={e => { if (!task.notes) e.currentTarget.style.color = 'rgba(255,255,255,0.3)' }}
         >
           {isNotesExpanded ? '▾' : '▸'}
           {task.notes ? 'Note' : 'Add note'}
@@ -817,21 +920,32 @@ function TaskRow({
         {isNotesExpanded && (
           <>
             <textarea
-              className="mt-1 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-600 resize-none focus:outline-none focus:border-white/20"
-              style={{ fontSize: '16px', minHeight: '80px' }}
+              className="mt-1 w-full rounded-xl px-3 py-2 text-sm resize-none focus:outline-none"
+              style={{
+                background: '#0a2535',
+                border: '1px solid rgba(240,117,88,0.15)',
+                color: 'rgba(255,255,255,0.8)',
+                fontSize: '16px',
+                minHeight: '80px',
+              }}
               placeholder="Add a note or update..."
               value={task.notes || ''}
               onChange={e => onUpdateNote(e.target.value)}
               onKeyDown={e => e.stopPropagation()}
             />
             <div className="mt-2 flex items-center gap-2">
-              <label className="text-xs text-gray-600">Due:</label>
+              <label className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>Due:</label>
               <input
                 type="date"
                 value={task.dueDate || ''}
                 onChange={e => onUpdateDueDate(e.target.value)}
-                className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-gray-300 focus:outline-none"
-                style={{ fontSize: '16px' }}
+                className="rounded px-2 py-1 text-xs focus:outline-none"
+                style={{
+                  background: '#0a2535',
+                  border: '1px solid rgba(240,117,88,0.15)',
+                  color: 'rgba(255,255,255,0.6)',
+                  fontSize: '16px',
+                }}
               />
             </div>
           </>
@@ -856,7 +970,10 @@ function TaskRow({
       {/* Delete button — always visible on mobile (subtle), hover-only on desktop */}
       <button
         onClick={onDelete}
-        className="flex-shrink-0 text-gray-600 hover:text-red-400 active:text-red-400 transition-colors p-1 min-h-[36px] min-w-[36px] flex items-center justify-center opacity-40 sm:opacity-0 sm:group-hover:opacity-100"
+        className="flex-shrink-0 transition-colors p-1 min-h-[36px] min-w-[36px] flex items-center justify-center opacity-40 sm:opacity-0 sm:group-hover:opacity-100"
+        style={{ color: 'rgba(255,255,255,0.2)' }}
+        onMouseEnter={e => (e.currentTarget.style.color = '#f07558')}
+        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.2)')}
         title="Delete task"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
