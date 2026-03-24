@@ -1,25 +1,5 @@
 runConfig:
-  minInstances: 0
-  maxInstances: 2
   cpu: 1
   memoryMiB: 512
-  concurrency: 80
-
-env:
-  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
-    value: AIzaSyCyqUjPKCr7eKzsMoyCTfEtMiLuQ6wZqJI
-
-  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-    value: juan-tasks-8411c.firebaseapp.com
-
-  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
-    value: juan-tasks-8411c
-
-  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-    value: juan-tasks-8411c.firebasestorage.app
-
-  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-    value: 99879539688
-
-  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
-    value: 1:99879539688:web:b6ccf116b7962551ee0a5d
+  maxInstances: 3
+  minInstances: 0
