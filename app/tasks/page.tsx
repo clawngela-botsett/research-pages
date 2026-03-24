@@ -10,6 +10,7 @@ interface Task {
   category: string
   status: string
   notes: string
+  priority?: boolean
   dueDate?: string
   createdAt: string
   updatedAt: string
@@ -334,6 +335,12 @@ export default function TasksPage() {
     upsertTask({ ...task, dueDate, updatedAt: new Date().toISOString() })
   }
 
+  const togglePriority = (id: string) => {
+    const task = tasks.find(t => t.id === id)
+    if (!task) return
+    upsertTask({ ...task, priority: !task.priority, updatedAt: new Date().toISOString() })
+  }
+
   const toggleNotes = (id: string) => {
     setExpandedNotes(prev => {
       const next = new Set(prev)
@@ -351,6 +358,8 @@ export default function TasksPage() {
 
   // Sort + group
   const sortFn = (a: Task, b: Task) => {
+    if (a.priority && !b.priority) return -1
+    if (!a.priority && b.priority) return 1
     const cmp = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     return sortOrder === 'newest' ? -cmp : cmp
   }
@@ -573,6 +582,7 @@ export default function TasksPage() {
             onToggleNotes={() => toggleNotes(task.id)}
             onUpdateNote={(notes) => updateNote(task.id, notes)}
             onUpdateDueDate={(dueDate) => updateDueDate(task.id, dueDate)}
+            onTogglePriority={() => togglePriority(task.id)}
           />
         ))}
 
@@ -614,6 +624,7 @@ export default function TasksPage() {
                 onToggleNotes={() => toggleNotes(task.id)}
                 onUpdateNote={(notes) => updateNote(task.id, notes)}
                 onUpdateDueDate={(dueDate) => updateDueDate(task.id, dueDate)}
+            onTogglePriority={() => togglePriority(task.id)}
                 isDone
               />
             ))}
@@ -658,6 +669,7 @@ export default function TasksPage() {
                 onToggleNotes={() => toggleNotes(task.id)}
                 onUpdateNote={(notes) => updateNote(task.id, notes)}
                 onUpdateDueDate={(dueDate) => updateDueDate(task.id, dueDate)}
+            onTogglePriority={() => togglePriority(task.id)}
                 isDone
               />
             ))}
@@ -702,6 +714,7 @@ interface TaskRowProps {
   onUpdateDueDate: (dueDate: string) => void
   isDone?: boolean
   isLeaving?: boolean
+  onTogglePriority?: () => void
 }
 
 function TaskRow({
@@ -710,7 +723,7 @@ function TaskRow({
   onCycleStatus, onStartEdit, onEditChange,
   onEditCommit, onEditKeyDown, onDelete,
   onToggleNotes, onUpdateNote, onUpdateDueDate,
-  isDone, isLeaving
+  isDone, isLeaving, onTogglePriority
 }: TaskRowProps) {
   const status = getStatusInfo(task.status)
 
@@ -824,6 +837,21 @@ function TaskRow({
           </>
         )}
       </div>
+
+      {/* Priority flag */}
+      {onTogglePriority && (
+        <button
+          onClick={onTogglePriority}
+          className={`flex-shrink-0 transition-all p-1 min-h-[36px] min-w-[36px] flex items-center justify-center text-base ${
+            task.priority
+              ? 'opacity-100'
+              : 'opacity-0 group-hover:opacity-40 hover:!opacity-100'
+          }`}
+          title={task.priority ? 'Remove priority' : 'Mark as priority'}
+        >
+          {task.priority ? '🚩' : '⚑'}
+        </button>
+      )}
 
       {/* Delete button — always visible on mobile (subtle), hover-only on desktop */}
       <button
