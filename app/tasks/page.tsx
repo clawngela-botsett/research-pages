@@ -164,6 +164,7 @@ export default function TasksPage() {
   const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set())
   const [completedCollapsed, setCompletedCollapsed] = useState(false)
   const [disregardedCollapsed, setDisregardedCollapsed] = useState(false)
+  const [leavingIds, setLeavingIds] = useState<Set<string>>(new Set())
   const inputRef = useRef<HTMLInputElement>(null)
   const editRef = useRef<HTMLInputElement>(null)
   const activeTabRef = useRef<HTMLButtonElement>(null)
@@ -269,7 +270,18 @@ export default function TasksPage() {
   const cycleTaskStatus = (id: string) => {
     const task = tasks.find(t => t.id === id)
     if (!task) return
-    upsertTask({ ...task, status: cycleStatus(task.status), updatedAt: new Date().toISOString() })
+    const nextStatus = cycleStatus(task.status)
+    const movesToBottom = nextStatus === 'done' || nextStatus === 'disregard'
+    if (movesToBottom) {
+      // Show new status immediately on the badge, then move after delay
+      upsertTask({ ...task, status: nextStatus, updatedAt: new Date().toISOString() })
+      setLeavingIds(prev => new Set(prev).add(id))
+      setTimeout(() => {
+        setLeavingIds(prev => { const s = new Set(prev); s.delete(id); return s })
+      }, 1200)
+    } else {
+      upsertTask({ ...task, status: nextStatus, updatedAt: new Date().toISOString() })
+    }
   }
 
   const startEdit = (task: Task) => {
@@ -327,9 +339,9 @@ export default function TasksPage() {
     return sortOrder === 'newest' ? -cmp : cmp
   }
 
-  const activeTasks = filtered.filter(t => t.status !== 'done' && t.status !== 'disregard').sort(sortFn)
-  const doneTasks = filtered.filter(t => t.status === 'done').sort(sortFn)
-  const disregardTasks = filtered.filter(t => t.status === 'disregard').sort(sortFn)
+  const activeTasks = filtered.filter(t => t.status !== 'done' && t.status !== 'disregard' || leavingIds.has(t.id)).sort(sortFn)
+  const doneTasks = filtered.filter(t => t.status === 'done' && !leavingIds.has(t.id)).sort(sortFn)
+  const disregardTasks = filtered.filter(t => t.status === 'disregard' && !leavingIds.has(t.id)).sort(sortFn)
 
   // Badge counts (active only)
   const badgeCount = (cat: string) =>
@@ -532,6 +544,7 @@ export default function TasksPage() {
             editText={editText}
             editRef={editRef}
             isNotesExpanded={expandedNotes.has(task.id)}
+            isLeaving={leavingIds.has(task.id)}
             onCycleStatus={() => cycleTaskStatus(task.id)}
             onStartEdit={() => startEdit(task)}
             onEditChange={setEditText}
@@ -672,6 +685,7 @@ interface TaskRowProps {
   onUpdateNote: (notes: string) => void
   onUpdateDueDate: (dueDate: string) => void
   isDone?: boolean
+  isLeaving?: boolean
 }
 
 function TaskRow({
@@ -680,15 +694,17 @@ function TaskRow({
   onCycleStatus, onStartEdit, onEditChange,
   onEditCommit, onEditKeyDown, onDelete,
   onToggleNotes, onUpdateNote, onUpdateDueDate,
-  isDone
+  isDone, isLeaving
 }: TaskRowProps) {
   const status = getStatusInfo(task.status)
 
   return (
-    <div className={`group flex items-start gap-2 px-3 py-3 rounded-lg border transition-colors ${
-      isDone
-        ? 'border-white/[0.03] opacity-50 hover:opacity-70'
-        : 'border-white/5 hover:border-white/10 hover:bg-white/[0.02] active:bg-white/[0.03]'
+    <div className={`group flex items-start gap-2 px-3 py-3 rounded-lg border transition-all duration-700 ${
+      isLeaving
+        ? 'border-white/[0.03] opacity-30 scale-[0.98]'
+        : isDone
+          ? 'border-white/[0.03] opacity-50 hover:opacity-70'
+          : 'border-white/5 hover:border-white/10 hover:bg-white/[0.02] active:bg-white/[0.03]'
     }`}>
       {/* Status badge — tappable, min 36px height */}
       <button
