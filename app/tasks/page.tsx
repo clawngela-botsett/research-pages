@@ -165,6 +165,7 @@ export default function TasksPage() {
   const [completedCollapsed, setCompletedCollapsed] = useState(false)
   const [disregardedCollapsed, setDisregardedCollapsed] = useState(false)
   const [leavingIds, setLeavingIds] = useState<Set<string>>(new Set())
+  const [pendingStatus, setPendingStatus] = useState<Record<string, string>>({})
   const inputRef = useRef<HTMLInputElement>(null)
   const editRef = useRef<HTMLInputElement>(null)
   const activeTabRef = useRef<HTMLButtonElement>(null)
@@ -273,10 +274,12 @@ export default function TasksPage() {
     const nextStatus = cycleStatus(task.status)
     const movesToBottom = nextStatus === 'done' || nextStatus === 'disregard'
     if (movesToBottom) {
-      // Show new status immediately on the badge, then move after delay
-      upsertTask({ ...task, status: nextStatus, updatedAt: new Date().toISOString() })
+      // Show new status badge optimistically + fade out, then write to Firestore after delay
+      setPendingStatus(prev => ({ ...prev, [id]: nextStatus }))
       setLeavingIds(prev => new Set(prev).add(id))
       setTimeout(() => {
+        upsertTask({ ...task, status: nextStatus, updatedAt: new Date().toISOString() })
+        setPendingStatus(prev => { const n = { ...prev }; delete n[id]; return n })
         setLeavingIds(prev => { const s = new Set(prev); s.delete(id); return s })
       }, 1200)
     } else {
@@ -539,7 +542,7 @@ export default function TasksPage() {
         {loaded && activeTasks.map(task => (
           <TaskRow
             key={task.id}
-            task={task}
+            task={pendingStatus[task.id] ? { ...task, status: pendingStatus[task.id] } : task}
             isEditing={editingId === task.id}
             editText={editText}
             editRef={editRef}
