@@ -166,6 +166,7 @@ export default function TasksPage() {
   const [disregardedCollapsed, setDisregardedCollapsed] = useState(false)
   const [leavingIds, setLeavingIds] = useState<Set<string>>(new Set())
   const [pendingStatus, setPendingStatus] = useState<Record<string, string>>({})
+  const leaveTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({})
   const inputRef = useRef<HTMLInputElement>(null)
   const editRef = useRef<HTMLInputElement>(null)
   const activeTabRef = useRef<HTMLButtonElement>(null)
@@ -271,18 +272,30 @@ export default function TasksPage() {
   const cycleTaskStatus = (id: string) => {
     const task = tasks.find(t => t.id === id)
     if (!task) return
-    const nextStatus = cycleStatus(task.status)
+    // Use pendingStatus as current if mid-animation (Firestore not written yet)
+    const currentStatus = pendingStatus[id] || task.status
+    const nextStatus = cycleStatus(currentStatus)
     const movesToBottom = nextStatus === 'done' || nextStatus === 'disregard'
     if (movesToBottom) {
-      // Show new status badge optimistically + fade out, then write to Firestore after delay
+      // Cancel any existing leave timer for this task
+      if (leaveTimers.current[id]) clearTimeout(leaveTimers.current[id])
+      // Show new status badge optimistically + fade, then write after delay
       setPendingStatus(prev => ({ ...prev, [id]: nextStatus }))
       setLeavingIds(prev => new Set(prev).add(id))
-      setTimeout(() => {
+      leaveTimers.current[id] = setTimeout(() => {
+        delete leaveTimers.current[id]
         upsertTask({ ...task, status: nextStatus, updatedAt: new Date().toISOString() })
         setPendingStatus(prev => { const n = { ...prev }; delete n[id]; return n })
         setLeavingIds(prev => { const s = new Set(prev); s.delete(id); return s })
       }, 1200)
     } else {
+      // Leaving animation cancelled — back to an active status
+      if (leaveTimers.current[id]) {
+        clearTimeout(leaveTimers.current[id])
+        delete leaveTimers.current[id]
+      }
+      setPendingStatus(prev => { const n = { ...prev }; delete n[id]; return n })
+      setLeavingIds(prev => { const s = new Set(prev); s.delete(id); return s })
       upsertTask({ ...task, status: nextStatus, updatedAt: new Date().toISOString() })
     }
   }
