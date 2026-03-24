@@ -16,7 +16,7 @@ interface Task {
   updatedAt: string
 }
 
-const CATEGORIES = ['DOAC', 'Commercial', 'Speaking', 'Private', 'Travel', 'SB Requests', 'Press/PR', 'BTD', 'FounderStory', 'Marketing', 'FS', 'JAO', 'Other']
+const CATEGORIES = ['BTD', 'Commercial', 'DOAC', 'FounderStory', 'FS', 'JAO', 'Marketing', 'Other', 'Press/PR', 'Private', 'SB Requests', 'Speaking', 'Travel']
 const LAST_CATEGORY_KEY = 'juan-tasks-last-category'
 
 const STATUSES = [
