@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react'
 
 const AUTH_KEY = 'auth_token'
-const AUTH_VALUE = 'sb8116_authenticated'
-const CORRECT_PASSWORD = 'sb8116'
+const AUTH_VALUE = 'jao_authenticated'
+const CORRECT_PASSWORD = 'gDFH*2Wvud_.U@6'
 
 const LOCKOUT_KEY = 'pw_attempts'
 const MAX_ATTEMPTS = 5
