@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 
 // ── Timezone data ─────────────────────────────────────────────────────────────
@@ -464,6 +464,30 @@ function buildOffsetSummary(
   return `${sourceTzAbbr} is ${parts.join(' · ')}`
 }
 
+// ── World clock helper ────────────────────────────────────────────────────────
+
+function getCurrentTime(tz: string): { time: string; date: string; abbr: string } {
+  const now = new Date()
+  const time = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz,
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  }).format(now)
+  const date = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz,
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  }).format(now)
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz,
+    timeZoneName: 'short',
+  }).formatToParts(now)
+  const abbr = parts.find(p => p.type === 'timeZoneName')?.value || ''
+  return { time, date, abbr }
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function TimezonePage() {
@@ -480,7 +504,19 @@ export default function TimezonePage() {
   const [parseError, setParseError] = useState('')
   const [copied, setCopied] = useState(false)
   const [copiedRow, setCopiedRow] = useState<number | null>(null)
+  const [now, setNow] = useState(new Date())
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Snap to next minute boundary so all clocks tick together
+  useEffect(() => {
+    const msUntilNextMinute = (60 - new Date().getSeconds()) * 1000 - new Date().getMilliseconds()
+    const timeout = setTimeout(() => {
+      setNow(new Date())
+      const interval = setInterval(() => setNow(new Date()), 60_000)
+      return () => clearInterval(interval)
+    }, msUntilNextMinute)
+    return () => clearTimeout(timeout)
+  }, [])
 
   const allCities = [...DEFAULT_CITIES, ...addedExtras]
 
@@ -570,6 +606,36 @@ export default function TimezonePage() {
         <h1 className="text-2xl font-bold tracking-tight text-white mb-8">
           Timezone Converter
         </h1>
+
+        {/* World clock */}
+        <div className="mb-6">
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'rgba(240,117,88,0.7)' }}>
+            Current Time
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {selectedCities.map(city => {
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              void now // reactive on tick
+              const { time, date, abbr } = getCurrentTime(city.iana)
+              const utcOffset = getUTCOffsetString(city.iana)
+              return (
+                <div
+                  key={city.iana}
+                  className="bg-[#061c26] border border-[#f07558]/15 rounded-xl px-4 py-3"
+                >
+                  <p className="text-white/70 text-xs uppercase tracking-wide mb-1">
+                    {city.flag} {city.label}
+                  </p>
+                  <p className="text-white text-2xl font-semibold tabular-nums leading-none mb-1">
+                    {time}
+                  </p>
+                  <p className="text-white/40 text-xs mb-0.5">{date}</p>
+                  <p className="text-[#f07558]/60 text-xs">{abbr} ({utcOffset})</p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
 
         {/* Paste box */}
         <div
