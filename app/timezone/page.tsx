@@ -34,11 +34,11 @@ interface TZOption {
 }
 
 const DEFAULT_CITIES: TZOption[] = [
-  { label: 'London', flag: '🇬🇧', iana: 'Europe/London' },
   { label: 'Los Angeles', flag: '🇺🇸', iana: 'America/Los_Angeles' },
+  { label: 'New York', flag: '🇺🇸', iana: 'America/New_York' },
+  { label: 'London', flag: '🇬🇧', iana: 'Europe/London' },
   { label: 'Cape Town', flag: '🇿🇦', iana: 'Africa/Johannesburg' },
   { label: 'Dubai', flag: '🇦🇪', iana: 'Asia/Dubai' },
-  { label: 'New York', flag: '🇺🇸', iana: 'America/New_York' },
 ]
 
 const EXTRA_CITIES: TZOption[] = [
@@ -469,9 +469,9 @@ function buildOffsetSummary(
 export default function TimezonePage() {
   const [input, setInput] = useState('')
   const [selectedCities, setSelectedCities] = useState<TZOption[]>([
-    DEFAULT_CITIES[0], // London
-    DEFAULT_CITIES[1], // Los Angeles
-    DEFAULT_CITIES[2], // Cape Town
+    DEFAULT_CITIES[0], // Los Angeles
+    DEFAULT_CITIES[2], // London
+    DEFAULT_CITIES[3], // Cape Town
   ])
   const [addedExtras, setAddedExtras] = useState<TZOption[]>([])
   const [showDropdown, setShowDropdown] = useState(false)
