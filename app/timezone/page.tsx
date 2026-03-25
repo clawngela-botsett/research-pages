@@ -137,15 +137,23 @@ interface TimeSlot {
   sourceTzAbbr: string
 }
 
-/** Parse "3:30" or "3" → { h, m } */
+/** Parse "3:30", "3", "1230", "930" → { h, m } */
 function parseHM(s: string): { h: number; m: number } | null {
   s = s.trim()
-  const parts = s.split(':')
-  if (parts.length === 2) {
-    return { h: parseInt(parts[0], 10), m: parseInt(parts[1], 10) }
+  // colon format: "3:30"
+  const colonParts = s.split(':')
+  if (colonParts.length === 2) {
+    return { h: parseInt(colonParts[0], 10), m: parseInt(colonParts[1], 10) }
   }
   const n = parseInt(s, 10)
   if (isNaN(n)) return null
+  // 3-4 digit no-colon: "1230" → 12:30, "930" → 9:30
+  if (s.length >= 3) {
+    const m = n % 100
+    const h = Math.floor(n / 100)
+    return { h, m }
+  }
+  // plain hour: "3", "12"
   return { h: n, m: 0 }
 }
 
@@ -195,7 +203,7 @@ function parseDate(raw: string): { year: number; month: number; day: number } | 
 function parseTimeRange(raw: string): [number, number, number, number] | null {
   raw = raw.trim()
   // Pattern: (time)(am|pm|a|p)?-(time)(am|pm|a|p)?
-  const m = raw.match(/^(\d{1,2}(?::\d{2})?)\s*(am|pm|a|p)?\s*[-–]\s*(\d{1,2}(?::\d{2})?)\s*(am|pm|a|p)?$/i)
+  const m = raw.match(/^(\d{1,4}(?::\d{2})?)\s*(am|pm|a|p)?\s*[-–]\s*(\d{1,4}(?::\d{2})?)\s*(am|pm|a|p)?$/i)
   if (!m) return null
 
   const startRaw = m[1]
@@ -278,15 +286,15 @@ function parseLine(line: string): TimeSlot[] {
     const trimmed = part.trim()
     if (!trimmed) continue
     // Find time range pattern, or fall back to single time
-    const trMatch = trimmed.match(/(\d{1,2}(?::\d{2})?\s*(?:am|pm|a|p)?\s*[-–]\s*\d{1,2}(?::\d{2})?\s*(?:am|pm|a|p)?)/i)
-    const singleMatch = !trMatch && trimmed.match(/\b(\d{1,2}(?::\d{2})?\s*(?:am|pm|a|p))\b/i)
+    const trMatch = trimmed.match(/(\d{1,4}(?::\d{2})?\s*(?:am|pm|a|p)?\s*[-–]\s*\d{1,4}(?::\d{2})?\s*(?:am|pm|a|p)?)/i)
+    const singleMatch = !trMatch && trimmed.match(/\b(\d{1,4}(?::\d{2})?\s*(?:am|pm|a|p))\b/i)
     if (!trMatch && !singleMatch) continue
     let parsed: [number, number, number, number] | null = null
     if (trMatch) {
       parsed = parseTimeRange(trMatch[1])
     } else if (singleMatch) {
       // Single time — treat as 30-minute slot
-      const hm = parseHM(singleMatch[1].replace(/[ap]m?$/i, '').trim())
+      const hm = parseHM(singleMatch[1].replace(/\s*[ap]m?$/i, '').trim())
       if (hm) {
         const suffix = (singleMatch[1].match(/[ap]m?$/i) || [''])[0].toLowerCase()
         let h = hm.h
