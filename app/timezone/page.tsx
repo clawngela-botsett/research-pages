@@ -315,6 +315,7 @@ function parseInput(text: string): TimeSlot[] {
 
 interface ConvertedSlot {
   slotLabel: string
+  fullSlotLabel: string   // e.g. "Tue 3/31 · 3:30–4pm CST"
   cells: { tz: string; label: string; nextDay: boolean; isSource: boolean }[]
 }
 
@@ -382,7 +383,11 @@ function convertSlots(slots: TimeSlot[], targetZones: TZOption[]): ConvertedSlot
       }
     })
 
-    return { slotLabel: slot.label, cells }
+    const startTime = formatTime12(slot.startH, slot.startM)
+    const endTime = formatTime12(slot.endH, slot.endM)
+    const fullSlotLabel = `${slot.label} · ${startTime}–${endTime} ${slot.sourceTzAbbr}`
+
+    return { slotLabel: slot.label, fullSlotLabel, cells }
   })
 }
 
@@ -393,30 +398,33 @@ function buildCopyText(
   results: ConvertedSlot[],
   selectedCities: TZOption[]
 ): string {
-  // Group by date label
-  const groups: Map<string, { slot: TimeSlot; result: ConvertedSlot }[]> = new Map()
-  slots.forEach((slot, i) => {
-    const key = slot.label
-    if (!groups.has(key)) groups.set(key, [])
-    groups.get(key)!.push({ slot, result: results[i] })
-  })
-
   const lines: string[] = []
-  for (const [, entries] of groups) {
-    for (const { slot, result } of entries) {
-      const startTime = formatTime12(slot.startH, slot.startM)
-      const endTime = formatTime12(slot.endH, slot.endM)
-      lines.push(`${slot.label} @ ${startTime}–${endTime} ${slot.sourceTzAbbr}`)
-      for (let j = 0; j < selectedCities.length; j++) {
-        const city = selectedCities[j]
-        const cell = result.cells[j]
-        const utcOffset = getUTCOffsetString(city.iana)
-        lines.push(`  ${city.flag} ${city.label} (${utcOffset}): ${cell.label}`)
-      }
-      lines.push('')
+  slots.forEach((_, i) => {
+    const result = results[i]
+    lines.push(result.fullSlotLabel)
+    for (let j = 0; j < selectedCities.length; j++) {
+      const city = selectedCities[j]
+      const cell = result.cells[j]
+      const utcOffset = getUTCOffsetString(city.iana)
+      lines.push(`  ${city.flag} ${city.label} (${utcOffset}): ${cell.label}`)
     }
-  }
+    lines.push('')
+  })
   return lines.join('\n').trimEnd()
+}
+
+function buildRowCopyText(
+  result: ConvertedSlot,
+  selectedCities: TZOption[]
+): string {
+  const lines: string[] = [result.fullSlotLabel]
+  for (let j = 0; j < selectedCities.length; j++) {
+    const city = selectedCities[j]
+    const cell = result.cells[j]
+    const utcOffset = getUTCOffsetString(city.iana)
+    lines.push(`  ${city.flag} ${city.label} (${utcOffset}): ${cell.label}`)
+  }
+  return lines.join('\n')
 }
 
 // ── Offset summary builder ────────────────────────────────────────────────────
@@ -460,6 +468,7 @@ export default function TimezonePage() {
   const [parsedSlots, setParsedSlots] = useState<TimeSlot[] | null>(null)
   const [parseError, setParseError] = useState('')
   const [copied, setCopied] = useState(false)
+  const [copiedRow, setCopiedRow] = useState<number | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   const allCities = [...DEFAULT_CITIES, ...addedExtras]
@@ -505,6 +514,15 @@ export default function TimezonePage() {
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  function handleCopyRow(rowIndex: number) {
+    if (!results) return
+    const text = buildRowCopyText(results[rowIndex], selectedCities)
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedRow(rowIndex)
+      setTimeout(() => setCopiedRow(null), 1500)
     })
   }
 
@@ -667,7 +685,7 @@ export default function TimezonePage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr style={{ background: '#061c26', borderBottom: '1px solid rgba(240,117,88,0.15)' }}>
-                      <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-widest" style={{ color: 'rgba(240,117,88,0.7)' }}>
+                      <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-widest whitespace-nowrap" style={{ color: 'rgba(240,117,88,0.7)', minWidth: '220px' }}>
                         Slot
                       </th>
                       {selectedCities.map(city => (
@@ -679,6 +697,7 @@ export default function TimezonePage() {
                           {city.flag} {city.label} ({getUTCOffsetString(city.iana)})
                         </th>
                       ))}
+                      <th className="px-2 py-3" />
                     </tr>
                   </thead>
                   <tbody>
@@ -690,8 +709,8 @@ export default function TimezonePage() {
                           borderBottom: '1px solid rgba(240,117,88,0.08)',
                         }}
                       >
-                        <td className="px-4 py-3 font-medium whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                          {row.slotLabel}
+                        <td className="px-4 py-3 font-medium whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.5)', minWidth: '220px' }}>
+                          {row.fullSlotLabel}
                         </td>
                         {row.cells.map((cell, j) => (
                           <td
@@ -713,6 +732,15 @@ export default function TimezonePage() {
                             )}
                           </td>
                         ))}
+                        <td className="px-2 py-3">
+                          <button
+                            onClick={() => handleCopyRow(i)}
+                            title="Copy this row"
+                            className="text-white/20 hover:text-[#f07558] transition-colors p-1"
+                          >
+                            {copiedRow === i ? '✅' : '📋'}
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -726,7 +754,7 @@ export default function TimezonePage() {
                 onClick={handleCopy}
                 className="bg-[#061c26] border border-[#f07558]/20 text-[#f07558] hover:bg-[#0a2535] rounded-xl px-4 py-2 text-sm transition-all"
               >
-                {copied ? '✅ Copied!' : '📋 Copy'}
+                {copied ? '✅ Copied!' : '📋 Copy all'}
               </button>
             </div>
 
