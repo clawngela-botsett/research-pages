@@ -250,9 +250,10 @@ function parseLine(line: string): TimeSlot[] {
   const sourceTz = tzAbbr ? TZ_MAP[tzAbbr] : null
   if (!sourceTz || !tzAbbr) return []
 
-  // Extract date: look for m/d pattern or "Month Day"
+  // Extract date: look for m/d pattern, "Month Day", or "Day Month"
   const dateMatch = line.match(/\b(\d{1,2}\/\d{1,2})\b/) ||
-    line.match(/\b((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*\s+\d{1,2})\b/i)
+    line.match(/\b((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*\s+\d{1,2})\b/i) ||
+    line.match(/\b(\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*)\b/i)
   if (!dateMatch) return []
   const dateInfo = parseDate(dateMatch[1])
   if (!dateInfo) return []
@@ -276,10 +277,26 @@ function parseLine(line: string): TimeSlot[] {
   for (const part of parts) {
     const trimmed = part.trim()
     if (!trimmed) continue
-    // Find time range pattern
+    // Find time range pattern, or fall back to single time
     const trMatch = trimmed.match(/(\d{1,2}(?::\d{2})?\s*(?:am|pm|a|p)?\s*[-–]\s*\d{1,2}(?::\d{2})?\s*(?:am|pm|a|p)?)/i)
-    if (!trMatch) continue
-    const parsed = parseTimeRange(trMatch[1])
+    const singleMatch = !trMatch && trimmed.match(/\b(\d{1,2}(?::\d{2})?\s*(?:am|pm|a|p))\b/i)
+    if (!trMatch && !singleMatch) continue
+    let parsed: [number, number, number, number] | null = null
+    if (trMatch) {
+      parsed = parseTimeRange(trMatch[1])
+    } else if (singleMatch) {
+      // Single time — treat as 30-minute slot
+      const hm = parseHM(singleMatch[1].replace(/[ap]m?$/i, '').trim())
+      if (hm) {
+        const suffix = (singleMatch[1].match(/[ap]m?$/i) || [''])[0].toLowerCase()
+        let h = hm.h
+        if (suffix === 'pm' || suffix === 'p') h = h !== 12 ? h + 12 : 12
+        else if (suffix === 'am' || suffix === 'a') h = h === 12 ? 0 : h
+        const endM = hm.m + 30
+        const endH = h + Math.floor(endM / 60)
+        parsed = [h, hm.m, endH % 24, endM % 60]
+      }
+    }
     if (!parsed) continue
     const [sH, sM, eH, eM] = parsed
     slots.push({
