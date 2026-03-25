@@ -27,6 +27,22 @@ const TZ_MAP: Record<string, string> = {
   SGT: 'Asia/Singapore',
 }
 
+/** Natural-language timezone aliases → canonical abbreviation in TZ_MAP */
+const TZ_ALIASES: [RegExp, string][] = [
+  [/\b(?:LA|Los\s+Angeles|Pacific)[\s-]*[Tt]ime\b/, 'PST'],
+  [/\b(?:NY|New\s+York|Eastern)[\s-]*[Tt]ime\b/, 'EST'],
+  [/\b(?:Chicago|Central)[\s-]*[Tt]ime\b/, 'CST'],
+  [/\b(?:Denver|Mountain)[\s-]*[Tt]ime\b/, 'MST'],
+  [/\b(?:London|UK|British)[\s-]*[Tt]ime\b/, 'GMT'],
+  [/\b(?:Paris|French|European)[\s-]*[Tt]ime\b/, 'CET'],
+  [/\b(?:Dubai|UAE|Gulf)[\s-]*[Tt]ime\b/, 'GST'],
+  [/\b(?:Cape\s+Town|Johannesburg|South\s+Africa|SAST)[\s-]*[Tt]ime\b/, 'SAST'],
+  [/\b(?:Sydney|Australian\s+Eastern)[\s-]*[Tt]ime\b/, 'AEST'],
+  [/\b(?:Tokyo|Japan)[\s-]*[Tt]ime\b/, 'JST'],
+  [/\b(?:Singapore)[\s-]*[Tt]ime\b/, 'SGT'],
+  [/\b(?:Mumbai|Delhi|India)[\s-]*[Tt]ime\b/, 'IST'],
+]
+
 interface TZOption {
   label: string
   flag: string
@@ -252,9 +268,14 @@ function parseTimeRange(raw: string): [number, number, number, number] | null {
 function parseLine(line: string): TimeSlot[] {
   const slots: TimeSlot[] = []
 
-  // Detect source timezone abbreviation
+  // Detect source timezone — try standard abbreviations first, then natural-language aliases
   const tzMatch = line.match(/\b(CST|CDT|EST|EDT|PST|PDT|MST|MDT|GMT|UTC|BST|CET|CEST|IST|GST|SAST|AEST|JST|SGT)\b/i)
-  const tzAbbr = tzMatch ? tzMatch[1].toUpperCase() : null
+  let tzAbbr: string | null = tzMatch ? tzMatch[1].toUpperCase() : null
+  if (!tzAbbr) {
+    for (const [pattern, abbr] of TZ_ALIASES) {
+      if (pattern.test(line)) { tzAbbr = abbr; break }
+    }
+  }
   const sourceTz = tzAbbr ? TZ_MAP[tzAbbr] : null
   if (!sourceTz || !tzAbbr) return []
 
@@ -596,7 +617,7 @@ export default function TimezonePage() {
     setParsedSlots(null)
     const slots = parseInput(input)
     if (slots.length === 0) {
-      setParseError('No time slots found. Make sure your text includes a date (e.g. 3/31), a time range (e.g. 3:30-4p), and a timezone (e.g. CST).')
+      setParseError('No time slots found. Make sure your text includes a date (e.g. 28/3 or 28 March), a time (e.g. 3pm or 3:30-4p), and a timezone (e.g. CST, GMT, or "LA Time").')
       return
     }
     const converted = convertSlots(slots, selectedCities)
