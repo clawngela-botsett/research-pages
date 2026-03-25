@@ -615,16 +615,26 @@ export default function TimezonePage() {
             Current Time
           </p>
           <div className="flex flex-wrap gap-2">
-            {selectedCities.map(city => {
+            {selectedCities.map((city, idx) => {
               void now
               const { time, date, abbr } = getCurrentTime(city.iana)
               const utcOffset = getUTCOffsetString(city.iana)
+              // Rotating Midnight Sun accent colours
+              const accents = [
+                { border: 'rgba(240,117,88,0.3)',  text: '#f07558',  bg: 'rgba(240,117,88,0.06)'  }, // coral
+                { border: 'rgba(34,211,238,0.3)',   text: '#22d3ee',  bg: 'rgba(34,211,238,0.06)'  }, // cyan
+                { border: 'rgba(99,102,241,0.3)',   text: '#818cf8',  bg: 'rgba(99,102,241,0.06)'  }, // indigo
+                { border: 'rgba(16,185,129,0.3)',   text: '#34d399',  bg: 'rgba(16,185,129,0.06)'  }, // emerald
+                { border: 'rgba(251,191,36,0.3)',   text: '#fbbf24',  bg: 'rgba(251,191,36,0.06)'  }, // amber
+                { border: 'rgba(244,114,182,0.3)',  text: '#f472b6',  bg: 'rgba(244,114,182,0.06)' }, // pink
+              ]
+              const accent = accents[idx % accents.length]
               return (
-                <div key={city.iana} className="bg-[#061c26] border border-[#f07558]/15 rounded-lg px-3 py-2 min-w-[110px]">
+                <div key={city.iana} style={{ background: `#061c26`, border: `1px solid ${accent.border}`, borderRadius: '10px' }} className="px-3 py-2 min-w-[110px]">
                   <p className="text-white/50 text-[10px] uppercase tracking-wide mb-0.5">{city.flag} {city.label}</p>
                   <p className="text-white text-base font-semibold tabular-nums leading-none mb-0.5">{time}</p>
                   <p className="text-white/30 text-[10px]">{date}</p>
-                  <p className="text-[#f07558]/50 text-[10px]">{abbr} ({utcOffset})</p>
+                  <p style={{ color: accent.text, opacity: 0.7 }} className="text-[10px]">{abbr} ({utcOffset})</p>
                 </div>
               )
             })}
