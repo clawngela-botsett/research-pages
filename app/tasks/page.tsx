@@ -441,6 +441,22 @@ export default function TasksPage() {
             </span>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
+            {/* Timezone converter link */}
+            <a
+              href="/timezone"
+              title="Timezone Converter"
+              className="text-base transition-colors px-2.5 py-2 min-h-[36px] rounded-xl flex items-center"
+              style={{
+                background: '#061c26',
+                border: '1px solid rgba(240,117,88,0.15)',
+                color: 'rgba(255,255,255,0.5)',
+                textDecoration: 'none',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
+            >
+              🌍
+            </a>
             {/* Sort toggle */}
             <button
               onClick={() => setSortOrder(s => s === 'newest' ? 'oldest' : 'newest')}
