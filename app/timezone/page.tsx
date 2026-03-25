@@ -631,7 +631,7 @@ export default function TimezonePage() {
               const accent = accents[idx % accents.length]
               return (
                 <div key={city.iana} style={{ background: `#061c26`, border: `1px solid ${accent.border}`, borderRadius: '10px' }} className="px-3 py-2 min-w-[110px]">
-                  <p className="text-white/50 text-[10px] uppercase tracking-wide mb-0.5">{city.flag} {city.label}</p>
+                  <p style={{ color: accent.text, opacity: 0.85 }} className="text-[10px] uppercase tracking-wide mb-0.5">{city.flag} {city.label}</p>
                   <p className="text-white text-base font-semibold tabular-nums leading-none mb-0.5">{time}</p>
                   <p className="text-white/30 text-[10px]">{date}</p>
                   <p style={{ color: accent.text, opacity: 0.7 }} className="text-[10px]">{abbr} ({utcOffset})</p>
