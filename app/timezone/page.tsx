@@ -706,7 +706,7 @@ export default function TimezonePage() {
                   <p style={{ color: accent.text }} className="text-[10px] uppercase tracking-wide mb-0.5">{city.flag} {city.label}</p>
                   <p className="text-white text-base font-semibold tabular-nums leading-none mb-0.5">{time}</p>
                   <p className="text-white/30 text-[10px]">{date}</p>
-                  <p style={{ color: accent.text }} className="text-[10px]">{abbr}</p>
+                  <p style={{ color: accent.text }} className="text-[10px]">{abbr} · {getUTCOffsetString(city.iana)}</p>
                 </div>
               )
             })}
