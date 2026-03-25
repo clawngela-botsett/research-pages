@@ -494,8 +494,10 @@ export default function TimezonePage() {
   const [input, setInput] = useState('')
   const [selectedCities, setSelectedCities] = useState<TZOption[]>([
     DEFAULT_CITIES[0], // Los Angeles
+    DEFAULT_CITIES[1], // New York
     DEFAULT_CITIES[2], // London
     DEFAULT_CITIES[3], // Cape Town
+    DEFAULT_CITIES[4], // Dubai
   ])
   const [addedExtras, setAddedExtras] = useState<TZOption[]>([])
   const [showDropdown, setShowDropdown] = useState(false)
@@ -612,28 +614,30 @@ export default function TimezonePage() {
           <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'rgba(240,117,88,0.7)' }}>
             Current Time
           </p>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2">
             {selectedCities.map(city => {
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              void now // reactive on tick
+              void now
               const { time, date, abbr } = getCurrentTime(city.iana)
               const utcOffset = getUTCOffsetString(city.iana)
               return (
-                <div
-                  key={city.iana}
-                  className="bg-[#061c26] border border-[#f07558]/15 rounded-xl px-4 py-3"
-                >
-                  <p className="text-white/70 text-xs uppercase tracking-wide mb-1">
-                    {city.flag} {city.label}
-                  </p>
-                  <p className="text-white text-2xl font-semibold tabular-nums leading-none mb-1">
-                    {time}
-                  </p>
-                  <p className="text-white/40 text-xs mb-0.5">{date}</p>
-                  <p className="text-[#f07558]/60 text-xs">{abbr} ({utcOffset})</p>
+                <div key={city.iana} className="bg-[#061c26] border border-[#f07558]/15 rounded-lg px-3 py-2 min-w-[110px]">
+                  <p className="text-white/50 text-[10px] uppercase tracking-wide mb-0.5">{city.flag} {city.label}</p>
+                  <p className="text-white text-base font-semibold tabular-nums leading-none mb-0.5">{time}</p>
+                  <p className="text-white/30 text-[10px]">{date}</p>
+                  <p className="text-[#f07558]/50 text-[10px]">{abbr} ({utcOffset})</p>
                 </div>
               )
             })}
+            {/* Add city button */}
+            <button
+              onClick={() => {
+                const allCities = [...DEFAULT_CITIES, ...EXTRA_CITIES]
+                const next = allCities.find(c => !selectedCities.find(s => s.iana === c.iana))
+                if (next) setSelectedCities(prev => [...prev, next])
+              }}
+              className="bg-[#061c26] border border-[#f07558]/15 rounded-lg px-3 py-2 min-w-[48px] flex items-center justify-center text-[#f07558]/50 hover:text-[#f07558] hover:border-[#f07558]/30 transition-colors text-lg"
+              title="Add city"
+            >＋</button>
           </div>
         </div>
 
