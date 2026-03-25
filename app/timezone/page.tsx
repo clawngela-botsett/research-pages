@@ -313,7 +313,33 @@ function parseInput(text: string): TimeSlot[] {
 
 // ── Timezone abbreviation helper ─────────────────────────────────────────────
 
+/** Map of IANA timezone → [standardAbbr, daylightAbbr, stdOffsetMinutes] */
+const TZ_ABBR_MAP: Record<string, [string, string, number]> = {
+  'America/Los_Angeles': ['PST', 'PDT', -480],
+  'America/New_York':    ['EST', 'EDT', -300],
+  'America/Chicago':     ['CST', 'CDT', -360],
+  'America/Denver':      ['MST', 'MDT', -420],
+  'UTC':                 ['UTC', 'UTC', 0],
+  'Europe/London':       ['GMT', 'BST', 0],
+  'Europe/Paris':        ['CET', 'CEST', 60],
+  'Asia/Kolkata':        ['IST', 'IST', 330],
+  'Asia/Dubai':          ['GST', 'GST', 240],
+  'Africa/Johannesburg': ['SAST', 'SAST', 120],
+  'Australia/Sydney':    ['AEST', 'AEDT', 600],
+  'Asia/Tokyo':          ['JST', 'JST', 540],
+  'Asia/Singapore':      ['SGT', 'SGT', 480],
+  'America/Sao_Paulo':   ['BRT', 'BRST', -180],
+}
+
 function getTzAbbr(date: Date, tz: string): string {
+  const known = TZ_ABBR_MAP[tz]
+  if (known) {
+    const [stdAbbr, dstAbbr, stdOffsetMin] = known
+    // Check current offset to determine if DST is active
+    const currentOffset = getUTCOffset(tz, date)
+    return currentOffset === stdOffsetMin ? stdAbbr : dstAbbr
+  }
+  // Fallback to Intl
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: tz,
     timeZoneName: 'short',
@@ -416,8 +442,8 @@ function buildCopyText(
     for (let j = 0; j < selectedCities.length; j++) {
       const city = selectedCities[j]
       const cell = result.cells[j]
-      const utcOffset = getUTCOffsetString(city.iana)
-      lines.push(`  ${city.flag} ${city.label} (${utcOffset}): ${cell.label}`)
+      const tzAbbr = getTzAbbr(new Date(), city.iana)
+      lines.push(`  ${city.flag} ${city.label} (${tzAbbr}): ${cell.label}`)
     }
     lines.push('')
   })
@@ -432,8 +458,8 @@ function buildRowCopyText(
   for (let j = 0; j < selectedCities.length; j++) {
     const city = selectedCities[j]
     const cell = result.cells[j]
-    const utcOffset = getUTCOffsetString(city.iana)
-    lines.push(`  ${city.flag} ${city.label} (${utcOffset}): ${cell.label}`)
+    const tzAbbr = getTzAbbr(new Date(), city.iana)
+    lines.push(`  ${city.flag} ${city.label} (${tzAbbr}): ${cell.label}`)
   }
   return lines.join('\n')
 }
@@ -480,11 +506,7 @@ function getCurrentTime(tz: string): { time: string; date: string; abbr: string 
     month: 'short',
     day: 'numeric',
   }).format(now)
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: tz,
-    timeZoneName: 'short',
-  }).formatToParts(now)
-  const abbr = parts.find(p => p.type === 'timeZoneName')?.value || ''
+  const abbr = getTzAbbr(now, tz)
   return { time, date, abbr }
 }
 
@@ -618,7 +640,7 @@ export default function TimezonePage() {
             {selectedCities.map((city, idx) => {
               void now
               const { time, date, abbr } = getCurrentTime(city.iana)
-              const utcOffset = getUTCOffsetString(city.iana)
+              const utcOffset = getTzAbbr(now, city.iana)
               // Rotating Midnight Sun accent colours
               const accents = [
                 { border: 'rgba(240,117,88,0.3)',  text: '#f07558',  bg: 'rgba(240,117,88,0.06)'  }, // coral
@@ -631,10 +653,10 @@ export default function TimezonePage() {
               const accent = accents[idx % accents.length]
               return (
                 <div key={city.iana} style={{ background: `#061c26`, border: `1px solid ${accent.border}`, borderRadius: '10px' }} className="px-3 py-2 min-w-[110px]">
-                  <p style={{ color: accent.text, opacity: 0.85 }} className="text-[10px] uppercase tracking-wide mb-0.5">{city.flag} {city.label}</p>
+                  <p style={{ color: accent.text }} className="text-[10px] uppercase tracking-wide mb-0.5">{city.flag} {city.label}</p>
                   <p className="text-white text-base font-semibold tabular-nums leading-none mb-0.5">{time}</p>
                   <p className="text-white/30 text-[10px]">{date}</p>
-                  <p style={{ color: accent.text, opacity: 0.7 }} className="text-[10px]">{abbr} ({utcOffset})</p>
+                  <p style={{ color: accent.text }} className="text-[10px]">{abbr}</p>
                 </div>
               )
             })}
@@ -785,7 +807,7 @@ export default function TimezonePage() {
                           className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-widest whitespace-nowrap"
                           style={{ color: 'rgba(240,117,88,0.7)' }}
                         >
-                          {city.flag} {city.label} ({getUTCOffsetString(city.iana)})
+                          {city.flag} {city.label} ({getTzAbbr(new Date(), city.iana)})
                         </th>
                       ))}
                       <th className="px-2 py-3" />
