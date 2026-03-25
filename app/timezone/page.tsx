@@ -151,6 +151,7 @@ interface TimeSlot {
   endM: number
   sourceTz: string
   sourceTzAbbr: string
+  isSingleTime?: boolean
 }
 
 /** Parse "3:30", "3", "1230", "930" → { h, m } */
@@ -314,16 +315,14 @@ function parseLine(line: string): TimeSlot[] {
     if (trMatch) {
       parsed = parseTimeRange(trMatch[1])
     } else if (singleMatch) {
-      // Single time — treat as 30-minute slot
+      // Single time — no range, just a point in time
       const hm = parseHM(singleMatch[1].replace(/\s*[ap]m?$/i, '').trim())
       if (hm) {
         const suffix = (singleMatch[1].match(/[ap]m?$/i) || [''])[0].toLowerCase()
         let h = hm.h
         if (suffix === 'pm' || suffix === 'p') h = h !== 12 ? h + 12 : 12
         else if (suffix === 'am' || suffix === 'a') h = h === 12 ? 0 : h
-        const endM = hm.m + 30
-        const endH = h + Math.floor(endM / 60)
-        parsed = [h, hm.m, endH % 24, endM % 60]
+        parsed = [h, hm.m, h, hm.m]
       }
     }
     if (!parsed) continue
@@ -339,6 +338,7 @@ function parseLine(line: string): TimeSlot[] {
       endM: eM,
       sourceTz,
       sourceTzAbbr: tzAbbr,
+      isSingleTime: !!singleMatch,
     })
   }
 
@@ -456,7 +456,9 @@ function convertSlots(slots: TimeSlot[], targetZones: TZOption[]): ConvertedSlot
       const nextDay = tgtDay !== srcDay
 
       const tzAbbr = getTzAbbr(startUTC, tz.iana)
-      const label = `${cleanWd} · ${startStr}–${endStr} ${tzAbbr}`.trimEnd()
+      const label = slot.isSingleTime
+        ? `${cleanWd} · ${startStr} ${tzAbbr}`.trimEnd()
+        : `${cleanWd} · ${startStr}–${endStr} ${tzAbbr}`.trimEnd()
 
       return {
         tz: tz.iana,
@@ -468,7 +470,9 @@ function convertSlots(slots: TimeSlot[], targetZones: TZOption[]): ConvertedSlot
 
     const startTime = formatTime12(slot.startH, slot.startM)
     const endTime = formatTime12(slot.endH, slot.endM)
-    const fullSlotLabel = `${slot.label} · ${startTime}–${endTime} ${slot.sourceTzAbbr}`
+    const fullSlotLabel = slot.isSingleTime
+      ? `${slot.label} · ${startTime} ${slot.sourceTzAbbr}`
+      : `${slot.label} · ${startTime}–${endTime} ${slot.sourceTzAbbr}`
 
     return { slotLabel: slot.label, fullSlotLabel, cells }
   })
