@@ -49,6 +49,26 @@ const EXTRA_CITIES: TZOption[] = [
   { label: 'São Paulo', flag: '🇧🇷', iana: 'America/Sao_Paulo' },
 ]
 
+// ── UTC offset helpers ────────────────────────────────────────────────────────
+
+function getUTCOffsetMinutes(tz: string): number {
+  const now = new Date()
+  const utcStr = now.toLocaleString('en-US', { timeZone: 'UTC', hour12: false, hour: '2-digit', minute: '2-digit' })
+  const tzStr = now.toLocaleString('en-US', { timeZone: tz, hour12: false, hour: '2-digit', minute: '2-digit' })
+  const utcParts = utcStr.split(':').map(Number)
+  const tzParts = tzStr.split(':').map(Number)
+  let diff = (tzParts[0] * 60 + tzParts[1]) - (utcParts[0] * 60 + utcParts[1])
+  // Handle day boundary wrap-around
+  if (diff > 720) diff -= 1440
+  if (diff < -720) diff += 1440
+  return diff
+}
+
+function getUTCOffsetString(tz: string): string {
+  const hours = Math.round(getUTCOffsetMinutes(tz) / 60)
+  return hours >= 0 ? `UTC+${hours}` : `UTC${hours}`
+}
+
 // ── Time conversion helpers ───────────────────────────────────────────────────
 
 function getUTCOffset(tz: string, date: Date): number {
@@ -114,6 +134,7 @@ interface TimeSlot {
   endH: number
   endM: number
   sourceTz: string
+  sourceTzAbbr: string
 }
 
 /** Parse "3:30" or "3" → { h, m } */
@@ -227,7 +248,7 @@ function parseLine(line: string): TimeSlot[] {
   const tzMatch = line.match(/\b(CST|CDT|EST|EDT|PST|PDT|MST|MDT|GMT|UTC|BST|CET|CEST|IST|GST|SAST|AEST|JST|SGT)\b/i)
   const tzAbbr = tzMatch ? tzMatch[1].toUpperCase() : null
   const sourceTz = tzAbbr ? TZ_MAP[tzAbbr] : null
-  if (!sourceTz) return []
+  if (!sourceTz || !tzAbbr) return []
 
   // Extract date: look for m/d pattern or "Month Day"
   const dateMatch = line.match(/\b(\d{1,2}\/\d{1,2})\b/) ||
@@ -271,6 +292,7 @@ function parseLine(line: string): TimeSlot[] {
       endH: eH,
       endM: eM,
       sourceTz,
+      sourceTzAbbr: tzAbbr,
     })
   }
 
@@ -364,6 +386,65 @@ function convertSlots(slots: TimeSlot[], targetZones: TZOption[]): ConvertedSlot
   })
 }
 
+// ── Copy text builder ─────────────────────────────────────────────────────────
+
+function buildCopyText(
+  slots: TimeSlot[],
+  results: ConvertedSlot[],
+  selectedCities: TZOption[]
+): string {
+  // Group by date label
+  const groups: Map<string, { slot: TimeSlot; result: ConvertedSlot }[]> = new Map()
+  slots.forEach((slot, i) => {
+    const key = slot.label
+    if (!groups.has(key)) groups.set(key, [])
+    groups.get(key)!.push({ slot, result: results[i] })
+  })
+
+  const lines: string[] = []
+  for (const [, entries] of groups) {
+    for (const { slot, result } of entries) {
+      const startTime = formatTime12(slot.startH, slot.startM)
+      const endTime = formatTime12(slot.endH, slot.endM)
+      lines.push(`${slot.label} @ ${startTime}–${endTime} ${slot.sourceTzAbbr}`)
+      for (let j = 0; j < selectedCities.length; j++) {
+        const city = selectedCities[j]
+        const cell = result.cells[j]
+        const utcOffset = getUTCOffsetString(city.iana)
+        lines.push(`  ${city.flag} ${city.label} (${utcOffset}): ${cell.label}`)
+      }
+      lines.push('')
+    }
+  }
+  return lines.join('\n').trimEnd()
+}
+
+// ── Offset summary builder ────────────────────────────────────────────────────
+
+function buildOffsetSummary(
+  sourceTzAbbr: string,
+  sourceTzIana: string,
+  selectedCities: TZOption[]
+): string {
+  const sourceOffsetMin = getUTCOffsetMinutes(sourceTzIana)
+  const parts: string[] = []
+  for (const city of selectedCities) {
+    if (city.iana === sourceTzIana) continue
+    const targetOffsetMin = getUTCOffsetMinutes(city.iana)
+    const diffHours = Math.round((targetOffsetMin - sourceOffsetMin) / 60)
+    if (diffHours === 0) continue
+    const absHours = Math.abs(diffHours)
+    const hourWord = absHours === 1 ? 'hour' : 'hours'
+    if (diffHours > 0) {
+      parts.push(`${absHours} ${hourWord} behind ${city.label}`)
+    } else {
+      parts.push(`${absHours} ${hourWord} ahead of ${city.label}`)
+    }
+  }
+  if (parts.length === 0) return ''
+  return `${sourceTzAbbr} is ${parts.join(' · ')}`
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function TimezonePage() {
@@ -376,7 +457,9 @@ export default function TimezonePage() {
   const [addedExtras, setAddedExtras] = useState<TZOption[]>([])
   const [showDropdown, setShowDropdown] = useState(false)
   const [results, setResults] = useState<ConvertedSlot[] | null>(null)
+  const [parsedSlots, setParsedSlots] = useState<TimeSlot[] | null>(null)
   const [parseError, setParseError] = useState('')
+  const [copied, setCopied] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   const allCities = [...DEFAULT_CITIES, ...addedExtras]
@@ -405,6 +488,7 @@ export default function TimezonePage() {
   function handleConvert() {
     setParseError('')
     setResults(null)
+    setParsedSlots(null)
     const slots = parseInput(input)
     if (slots.length === 0) {
       setParseError('No time slots found. Make sure your text includes a date (e.g. 3/31), a time range (e.g. 3:30-4p), and a timezone (e.g. CST).')
@@ -412,11 +496,28 @@ export default function TimezonePage() {
     }
     const converted = convertSlots(slots, selectedCities)
     setResults(converted)
+    setParsedSlots(slots)
+  }
+
+  function handleCopy() {
+    if (!results || !parsedSlots) return
+    const text = buildCopyText(parsedSlots, results, selectedCities)
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
   }
 
   const availableExtras = EXTRA_CITIES.filter(
     c => !addedExtras.find(e => e.iana === c.iana)
   )
+
+  // Derive source timezone info from first parsed slot
+  const sourceTzAbbr = parsedSlots?.[0]?.sourceTzAbbr ?? ''
+  const sourceTzIana = parsedSlots?.[0]?.sourceTz ?? ''
+  const offsetSummary = sourceTzAbbr && sourceTzIana
+    ? buildOffsetSummary(sourceTzAbbr, sourceTzIana, selectedCities)
+    : ''
 
   return (
     <div
@@ -557,65 +658,84 @@ export default function TimezonePage() {
 
         {/* Results */}
         {results && results.length > 0 && (
-          <div
-            className="rounded-2xl overflow-hidden"
-            style={{ border: '1px solid rgba(240,117,88,0.2)' }}
-          >
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr style={{ background: '#061c26', borderBottom: '1px solid rgba(240,117,88,0.15)' }}>
-                    <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-widest" style={{ color: 'rgba(240,117,88,0.7)' }}>
-                      Slot
-                    </th>
-                    {selectedCities.map(city => (
-                      <th
-                        key={city.iana}
-                        className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-widest whitespace-nowrap"
-                        style={{ color: 'rgba(240,117,88,0.7)' }}
-                      >
-                        {city.flag} {city.label}
+          <div>
+            <div
+              className="rounded-2xl overflow-hidden"
+              style={{ border: '1px solid rgba(240,117,88,0.2)' }}
+            >
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr style={{ background: '#061c26', borderBottom: '1px solid rgba(240,117,88,0.15)' }}>
+                      <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-widest" style={{ color: 'rgba(240,117,88,0.7)' }}>
+                        Slot
                       </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {results.map((row, i) => (
-                    <tr
-                      key={i}
-                      style={{
-                        background: i % 2 === 0 ? '#061c26' : 'rgba(6,28,38,0.5)',
-                        borderBottom: '1px solid rgba(240,117,88,0.08)',
-                      }}
-                    >
-                      <td className="px-4 py-3 font-medium whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                        {row.slotLabel}
-                      </td>
-                      {row.cells.map((cell, j) => (
-                        <td
-                          key={j}
-                          className="px-4 py-3 whitespace-nowrap"
-                          style={{
-                            color: cell.isSource ? '#f07558' : 'rgba(255,255,255,0.85)',
-                            background: cell.isSource ? 'rgba(240,117,88,0.06)' : undefined,
-                          }}
+                      {selectedCities.map(city => (
+                        <th
+                          key={city.iana}
+                          className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-widest whitespace-nowrap"
+                          style={{ color: 'rgba(240,117,88,0.7)' }}
                         >
-                          {cell.label}
-                          {cell.nextDay && (
-                            <span
-                              className="ml-1 text-xs rounded px-1"
-                              style={{ background: 'rgba(240,117,88,0.2)', color: '#f07558' }}
-                            >
-                              +1d
-                            </span>
-                          )}
-                        </td>
+                          {city.flag} {city.label} ({getUTCOffsetString(city.iana)})
+                        </th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {results.map((row, i) => (
+                      <tr
+                        key={i}
+                        style={{
+                          background: i % 2 === 0 ? '#061c26' : 'rgba(6,28,38,0.5)',
+                          borderBottom: '1px solid rgba(240,117,88,0.08)',
+                        }}
+                      >
+                        <td className="px-4 py-3 font-medium whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                          {row.slotLabel}
+                        </td>
+                        {row.cells.map((cell, j) => (
+                          <td
+                            key={j}
+                            className="px-4 py-3 whitespace-nowrap"
+                            style={{
+                              color: cell.isSource ? '#f07558' : 'rgba(255,255,255,0.85)',
+                              background: cell.isSource ? 'rgba(240,117,88,0.06)' : undefined,
+                            }}
+                          >
+                            {cell.label}
+                            {cell.nextDay && (
+                              <span
+                                className="ml-1 text-xs rounded px-1"
+                                style={{ background: 'rgba(240,117,88,0.2)', color: '#f07558' }}
+                              >
+                                +1d
+                              </span>
+                            )}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
+
+            {/* Copy button */}
+            <div className="flex justify-center mt-4">
+              <button
+                onClick={handleCopy}
+                className="bg-[#061c26] border border-[#f07558]/20 text-[#f07558] hover:bg-[#0a2535] rounded-xl px-4 py-2 text-sm transition-all"
+              >
+                {copied ? '✅ Copied!' : '📋 Copy'}
+              </button>
+            </div>
+
+            {/* Offset summary */}
+            {offsetSummary && (
+              <p className="text-white/40 text-xs text-center mt-3 px-4">
+                {offsetSummary}
+              </p>
+            )}
           </div>
         )}
 
