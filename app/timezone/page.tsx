@@ -158,18 +158,18 @@ const MONTH_NAMES: Record<string, number> = {
 
 function parseDate(raw: string): { year: number; month: number; day: number } | null {
   const s = raw.trim()
-  // m/d or mm/dd
+  // DD/MM (European format — day first, month second)
   const slashMatch = s.match(/^(\d{1,2})\/(\d{1,2})$/)
   if (slashMatch) {
     const now = new Date()
-    const month = parseInt(slashMatch[1], 10)
-    const day = parseInt(slashMatch[2], 10)
+    const dayVal = parseInt(slashMatch[1], 10)
+    const monthVal = parseInt(slashMatch[2], 10)
     let year = now.getFullYear()
     // If the date is already in the past this year, push to next year
-    if (new Date(year, month - 1, day) < new Date(now.getFullYear(), now.getMonth(), now.getDate())) {
+    if (new Date(year, monthVal - 1, dayVal) < new Date(now.getFullYear(), now.getMonth(), now.getDate())) {
       year += 1
     }
-    return { year, month, day }
+    return { year, month: monthVal, day: dayVal }
   }
   // "March 31" or "31 March"
   const wordMatch = s.match(/([a-z]+)\s+(\d{1,2})|(\d{1,2})\s+([a-z]+)/i)
@@ -714,7 +714,7 @@ export default function TimezonePage() {
             onBlur={e => (e.currentTarget.style.borderColor = 'rgba(240,117,88,0.2)')}
           />
           <p className="text-xs mt-2" style={{ color: 'rgba(255,255,255,0.3)' }}>
-            e.g. &quot;Tue 3/31 @ 3:30-4p CST, Wed 4/1 @ 12-12:30p CST&quot;
+            e.g. &quot;Tue 31/3 @ 3:30-4p CST, Wed 1/4 @ 12-12:30p CST&quot;
           </p>
         </div>
 
