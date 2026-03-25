@@ -311,6 +311,16 @@ function parseInput(text: string): TimeSlot[] {
   return results
 }
 
+// ── Timezone abbreviation helper ─────────────────────────────────────────────
+
+function getTzAbbr(date: Date, tz: string): string {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz,
+    timeZoneName: 'short',
+  }).formatToParts(date)
+  return parts.find(p => p.type === 'timeZoneName')?.value || ''
+}
+
 // ── Result types ──────────────────────────────────────────────────────────────
 
 interface ConvertedSlot {
@@ -373,7 +383,8 @@ function convertSlots(slots: TimeSlot[], targetZones: TZOption[]): ConvertedSlot
       const tgtDay = startFormatted.dayNum
       const nextDay = tgtDay !== srcDay
 
-      const label = `${cleanWd} · ${startStr}–${endStr}`
+      const tzAbbr = getTzAbbr(startUTC, tz.iana)
+      const label = `${cleanWd} · ${startStr}–${endStr} ${tzAbbr}`.trimEnd()
 
       return {
         tz: tz.iana,
