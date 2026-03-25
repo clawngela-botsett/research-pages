@@ -455,20 +455,7 @@ export default function TasksPage() {
             >
               {sortOrder === 'newest' ? '↓ New' : '↑ Old'}
             </button>
-            {/* Export CSV */}
-            <button
-              onClick={() => exportCSV(tasks)}
-              className="text-xs transition-colors px-3 py-2 min-h-[36px] rounded-xl flex items-center whitespace-nowrap"
-              style={{
-                background: '#061c26',
-                border: '1px solid rgba(240,117,88,0.15)',
-                color: 'rgba(255,255,255,0.6)',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'white')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
-            >
-              Export CSV
-            </button>
+
           </div>
         </div>
 
