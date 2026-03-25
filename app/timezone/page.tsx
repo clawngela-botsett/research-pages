@@ -857,7 +857,7 @@ export default function TimezonePage() {
                           className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-widest whitespace-nowrap"
                           style={{ color: 'rgba(240,117,88,0.7)' }}
                         >
-                          {city.flag} {city.label} ({getTzAbbr(new Date(), city.iana)})
+                          {city.flag} {city.label} ({getTzAbbr(new Date(), city.iana)} · {getUTCOffsetString(city.iana)})
                         </th>
                       ))}
                       <th className="px-2 py-3" />
