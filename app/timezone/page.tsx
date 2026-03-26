@@ -305,7 +305,7 @@ function parseLine(line: string): TimeSlot[] {
     // Strip natural-language timezone phrases
     .replace(/\b(?:LA|Los\s+Angeles|Pacific|NY|New\s+York|Eastern|Chicago|Central|Denver|Mountain|London|UK|British|Paris|French|European|Dubai|UAE|Gulf|Cape\s+Town|Johannesburg|South\s+Africa|Sydney|Australian\s+Eastern|Tokyo|Japan|Singapore|Mumbai|Delhi|India)\s+time\b/gi, '')
     // Strip filler words
-    .replace(/\bat\b/gi, ' ')
+    .replace(/\b(?:at|on|the|from)\b/gi, ' ')
     .replace(/@/g, ' ')
 
   // Split by comma to handle multiple slots per line
