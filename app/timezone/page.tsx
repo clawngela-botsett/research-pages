@@ -30,10 +30,10 @@ const TZ_MAP: Record<string, string> = {
 
 /** Natural-language timezone aliases → canonical abbreviation in TZ_MAP */
 const TZ_ALIASES: [RegExp, string][] = [
-  [/\b(?:LA|Los\s+Angeles|Pacific)(?:\s+time)?\b/i, 'PST'],
-  [/\b(?:NY|New\s+York|Eastern)(?:\s+time)?\b/i, 'EST'],
-  [/\b(?:Chicago|Central)(?:\s+time)?\b/i, 'CST'],
-  [/\b(?:Denver|Mountain)(?:\s+time)?\b/i, 'MST'],
+  [/\b(?:LA|Los\s+Angeles|Pacific|PT)(?:\s+time)?\b/i, 'PST'],
+  [/\b(?:NY|New\s+York|Eastern|ET)(?:\s+time)?\b/i, 'EST'],
+  [/\b(?:Chicago|Central|CT)(?:\s+time)?\b/i, 'CST'],
+  [/\b(?:Denver|Mountain|MT)(?:\s+time)?\b/i, 'MST'],
   [/\b(?:London|UK|British)(?:\s+time)?\b/i, 'GMT'],
   [/\b(?:Paris|French|European)(?:\s+time)?\b/i, 'CET'],
   [/\b(?:Dubai|UAE|Gulf)(?:\s+time)?\b/i, 'GST'],
@@ -819,7 +819,7 @@ export default function TimezonePage() {
     setParsedSlots(null)
     const slots = parseInput(input)
     if (slots.length === 0) {
-      setParseError('No time slots found. Make sure your text includes a date (e.g. 28/3 or 28 March), a time (e.g. 3pm or 3:30-4p), and a timezone (e.g. CST, GMT, or "LA Time").')
+      setParseError('No time slots found. Make sure your text includes a date (e.g. 28/3 or 28 March), a time (e.g. 3pm or 3:30-4p), and a timezone (e.g. ET, PT, CST, GMT, or "LA Time").')
       return
     }
     const converted = convertSlots(slots, selectedCities)
