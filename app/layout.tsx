@@ -7,7 +7,7 @@ import PasswordGate from "@/components/PasswordGate"
 const inter = Inter({ subsets: ["latin"] })
 
 // App configuration from environment variables
-const appName = process.env.NEXT_PUBLIC_APP_NAME || "My App"
+const appName = process.env.NEXT_PUBLIC_APP_NAME || "Clawngela Botsett Apps"
 const appDescription = process.env.NEXT_PUBLIC_APP_DESCRIPTION ||
   "A modern web application built with Next.js and Firebase"
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://example.com"
