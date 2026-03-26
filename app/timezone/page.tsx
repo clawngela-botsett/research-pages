@@ -686,16 +686,16 @@ export default function TimezonePage() {
         </Link>
 
         {/* Header */}
-        <h1 className="text-2xl font-bold tracking-tight text-white mb-4">
+        <h1 className="text-2xl font-bold tracking-tight text-white mb-4 text-center">
           Timezone Converter
         </h1>
 
         {/* World clock */}
         <div className="mb-4">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'rgba(240,117,88,0.7)' }}>
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3 text-center" style={{ color: 'rgba(240,117,88,0.7)' }}>
             Current Time
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 justify-center">
             {selectedCities.map((city, idx) => {
               void now
               const { time, date, abbr } = getCurrentTime(city.iana)
@@ -737,7 +737,7 @@ export default function TimezonePage() {
           className="rounded-2xl p-5 mb-4"
           style={{ background: '#061c26', border: '1px solid rgba(240,117,88,0.2)' }}
         >
-          <label className="block text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'rgba(240,117,88,0.7)' }}>
+          <label className="block text-xs font-semibold uppercase tracking-widest mb-3 text-center" style={{ color: 'rgba(240,117,88,0.7)' }}>
             Availability Text
           </label>
           <textarea
@@ -755,7 +755,7 @@ export default function TimezonePage() {
             onFocus={e => (e.currentTarget.style.borderColor = 'rgba(240,117,88,0.5)')}
             onBlur={e => (e.currentTarget.style.borderColor = 'rgba(240,117,88,0.2)')}
           />
-          <p className="mt-2 text-xs font-mono leading-relaxed" style={{ color: 'rgba(255,255,255,0.2)' }}>
+          <p className="mt-2 text-xs font-mono leading-relaxed text-center" style={{ color: 'rgba(255,255,255,0.2)' }}>
             31/3 @ 3:30-4p CST &nbsp;·&nbsp; 1st April 5pm Chicago &nbsp;·&nbsp; 30 march at 6pm LA &nbsp;·&nbsp; Mon 31/3 12-1230pm London &nbsp;·&nbsp; April 1st 9am-10am Dubai
           </p>
         </div>
@@ -765,10 +765,10 @@ export default function TimezonePage() {
           className="rounded-2xl p-5 mb-4"
           style={{ background: '#061c26', border: '1px solid rgba(240,117,88,0.2)' }}
         >
-          <label className="block text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'rgba(240,117,88,0.7)' }}>
+          <label className="block text-xs font-semibold uppercase tracking-widest mb-3 text-center" style={{ color: 'rgba(240,117,88,0.7)' }}>
             Convert To
           </label>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 justify-center">
             {allCities.map(city => {
               const active = !!selectedCities.find(c => c.iana === city.iana)
               return (
@@ -828,7 +828,7 @@ export default function TimezonePage() {
         {/* Convert button */}
         <button
           onClick={handleConvert}
-          className="px-6 py-3 rounded-xl font-semibold text-white transition-opacity mb-4"
+          className="px-6 py-3 rounded-xl font-semibold text-white transition-opacity mb-4 block mx-auto"
           style={{ background: '#f07558' }}
           onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
           onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
