@@ -355,7 +355,7 @@ function parseLine(line: string): TimeSlot[] {
   // Build a label: extract weekday if present
   const wdMatch = line.match(/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b/i)
   const wd = wdMatch ? wdMatch[1].slice(0, 3) : ''
-  const dateLabel = `${wd ? wd + ' ' : ''}${dateInfo.month}/${dateInfo.day}`
+  const dateLabel = `${wd ? wd + ' ' : ''}${dateInfo.day}/${dateInfo.month}`
 
   // Extract all time ranges from the line
   // Strip the timezone abbreviation and date info first to avoid false matches
@@ -694,15 +694,13 @@ function convertSlots(slots: TimeSlot[], targetZones: TZOption[]): ConvertedSlot
       const endStr = endTimeFmt.format(endUTC).replace(':00', '').toLowerCase()
 
       // Get weekday + date in target tz
-      const wdFmt = new Intl.DateTimeFormat('en-US', {
-        timeZone: tz.iana,
-        weekday: 'short',
-        month: 'numeric',
-        day: 'numeric',
-      })
-      const wdStr = wdFmt.format(startUTC) // e.g. "Tue, 3/31"
-      // Clean up: "Tue, 3/31" → "Tue 3/31"
-      const cleanWd = wdStr.replace(',', '')
+      const wdFmt = new Intl.DateTimeFormat('en-US', { timeZone: tz.iana, weekday: 'short' })
+      const dayFmt = new Intl.DateTimeFormat('en-US', { timeZone: tz.iana, day: 'numeric' })
+      const monFmt = new Intl.DateTimeFormat('en-US', { timeZone: tz.iana, month: 'numeric' })
+      const wd = wdFmt.format(startUTC)           // "Thu"
+      const d  = dayFmt.format(startUTC)           // "2"
+      const m  = monFmt.format(startUTC)           // "4"
+      const cleanWd = `${wd} ${d}/${m}`            // "Thu 2/4" (DD/MM)
 
       const tgtDay = startFormatted.dayNum
       const nextDay = tgtDay !== srcDay
