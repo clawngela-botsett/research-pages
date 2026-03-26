@@ -493,7 +493,8 @@ function buildCopyText(
       const city = selectedCities[j]
       const cell = result.cells[j]
       const tzAbbr = getTzAbbr(new Date(), city.iana)
-      lines.push(`  ${city.flag} ${city.label} (${tzAbbr}): ${cell.label}`)
+      const utcOffset = getUTCOffsetString(city.iana)
+      lines.push(`  ${city.flag} ${city.label} (${tzAbbr} · ${utcOffset}): ${cell.label}`)
     }
     lines.push('')
   })
@@ -509,7 +510,8 @@ function buildRowCopyText(
     const city = selectedCities[j]
     const cell = result.cells[j]
     const tzAbbr = getTzAbbr(new Date(), city.iana)
-    lines.push(`  ${city.flag} ${city.label} (${tzAbbr}): ${cell.label}`)
+    const utcOffset = getUTCOffsetString(city.iana)
+    lines.push(`  ${city.flag} ${city.label} (${tzAbbr} · ${utcOffset}): ${cell.label}`)
   }
   return lines.join('\n')
 }
