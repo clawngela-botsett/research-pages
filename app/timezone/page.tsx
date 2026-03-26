@@ -672,12 +672,12 @@ export default function TimezonePage() {
       className="min-h-screen"
       style={{ background: '#020e14', color: 'white' }}
     >
-      <div className="max-w-3xl mx-auto px-4 py-8">
+      <div className="max-w-3xl mx-auto px-4 py-5">
 
         {/* Back link */}
         <Link
           href="/tasks"
-          className="inline-flex items-center gap-1 text-sm mb-6 transition-colors"
+          className="inline-flex items-center gap-1 text-sm mb-4 transition-colors"
           style={{ color: 'rgba(240,117,88,0.7)' }}
           onMouseEnter={e => (e.currentTarget.style.color = '#f07558')}
           onMouseLeave={e => (e.currentTarget.style.color = 'rgba(240,117,88,0.7)')}
@@ -686,12 +686,12 @@ export default function TimezonePage() {
         </Link>
 
         {/* Header */}
-        <h1 className="text-2xl font-bold tracking-tight text-white mb-8">
+        <h1 className="text-2xl font-bold tracking-tight text-white mb-4">
           Timezone Converter
         </h1>
 
         {/* World clock */}
-        <div className="mb-6">
+        <div className="mb-4">
           <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'rgba(240,117,88,0.7)' }}>
             Current Time
           </p>
@@ -734,7 +734,7 @@ export default function TimezonePage() {
 
         {/* Paste box */}
         <div
-          className="rounded-2xl p-5 mb-6"
+          className="rounded-2xl p-5 mb-4"
           style={{ background: '#061c26', border: '1px solid rgba(240,117,88,0.2)' }}
         >
           <label className="block text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'rgba(240,117,88,0.7)' }}>
@@ -771,7 +771,7 @@ export default function TimezonePage() {
 
         {/* Target timezones */}
         <div
-          className="rounded-2xl p-5 mb-6"
+          className="rounded-2xl p-5 mb-4"
           style={{ background: '#061c26', border: '1px solid rgba(240,117,88,0.2)' }}
         >
           <label className="block text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'rgba(240,117,88,0.7)' }}>
@@ -837,7 +837,7 @@ export default function TimezonePage() {
         {/* Convert button */}
         <button
           onClick={handleConvert}
-          className="px-6 py-3 rounded-xl font-semibold text-white transition-opacity mb-6"
+          className="px-6 py-3 rounded-xl font-semibold text-white transition-opacity mb-4"
           style={{ background: '#f07558' }}
           onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
           onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
@@ -848,7 +848,7 @@ export default function TimezonePage() {
         {/* Error */}
         {parseError && (
           <div
-            className="rounded-xl px-4 py-3 text-sm mb-6"
+            className="rounded-xl px-4 py-3 text-sm mb-4"
             style={{ background: 'rgba(240,117,88,0.1)', border: '1px solid rgba(240,117,88,0.3)', color: '#f07558' }}
           >
             {parseError}
