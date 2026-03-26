@@ -269,21 +269,24 @@ function parseTimeRange(raw: string): [number, number, number, number] | null {
 function parseLine(line: string): TimeSlot[] {
   const slots: TimeSlot[] = []
 
+  // Normalise ordinal suffixes first
+  const normLine = line.replace(/\b(\d{1,2})(?:st|nd|rd|th)\b/gi, '$1')
+
   // Detect source timezone — try standard abbreviations first, then natural-language aliases
-  const tzMatch = line.match(/\b(CST|CDT|EST|EDT|PST|PDT|MST|MDT|GMT|UTC|BST|CET|CEST|IST|GST|SAST|AEST|JST|SGT)\b/i)
+  const tzMatch = normLine.match(/\b(CST|CDT|EST|EDT|PST|PDT|MST|MDT|GMT|UTC|BST|CET|CEST|IST|GST|SAST|AEST|JST|SGT)\b/i)
   let tzAbbr: string | null = tzMatch ? tzMatch[1].toUpperCase() : null
   if (!tzAbbr) {
     for (const [pattern, abbr] of TZ_ALIASES) {
-      if (pattern.test(line)) { tzAbbr = abbr; break }
+      if (pattern.test(normLine)) { tzAbbr = abbr; break }
     }
   }
   const sourceTz = tzAbbr ? TZ_MAP[tzAbbr] : null
   if (!sourceTz || !tzAbbr) return []
 
   // Extract date: DD/MM first, then Day Month (European default), then Month Day fallback
-  const dateMatch = line.match(/\b(\d{1,2}\/\d{1,2})\b/) ||
-    line.match(/\b(\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*)\b/i) ||
-    line.match(/\b((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*\s+\d{1,2})\b/i)
+  const dateMatch = normLine.match(/\b(\d{1,2}\/\d{1,2})\b/) ||
+    normLine.match(/\b(\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*)\b/i) ||
+    normLine.match(/\b((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*\s+\d{1,2})\b/i)
   if (!dateMatch) return []
   const dateInfo = parseDate(dateMatch[1])
   if (!dateInfo) return []
@@ -295,7 +298,7 @@ function parseLine(line: string): TimeSlot[] {
 
   // Extract all time ranges from the line
   // Strip the timezone abbreviation and date info first to avoid false matches
-  const stripped = line
+  const stripped = normLine
     .replace(/\b(CST|CDT|EST|EDT|PST|PDT|MST|MDT|GMT|UTC|BST|CET|CEST|IST|GST|SAST|AEST|JST|SGT)\b/gi, '')
     .replace(/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b/gi, '')
     .replace(/\b\d{1,2}\/\d{1,2}\b/g, '')
