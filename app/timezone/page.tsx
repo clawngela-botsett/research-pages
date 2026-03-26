@@ -501,9 +501,8 @@ function buildCopyText(
     for (let j = 0; j < selectedCities.length; j++) {
       const city = selectedCities[j]
       const cell = result.cells[j]
-      const tzAbbr = getTzAbbr(new Date(), city.iana)
       const utcOffset = getUTCOffsetString(city.iana)
-      lines.push(`  ${city.flag} ${city.label} (${tzAbbr} · ${utcOffset}): ${cell.label}`)
+      lines.push(`  ${city.flag} ${city.label} (${utcOffset}): ${cell.label}`)
     }
     lines.push('')
   })
@@ -518,9 +517,8 @@ function buildRowCopyText(
   for (let j = 0; j < selectedCities.length; j++) {
     const city = selectedCities[j]
     const cell = result.cells[j]
-    const tzAbbr = getTzAbbr(new Date(), city.iana)
     const utcOffset = getUTCOffsetString(city.iana)
-    lines.push(`  ${city.flag} ${city.label} (${tzAbbr} · ${utcOffset}): ${cell.label}`)
+    lines.push(`  ${city.flag} ${city.label} (${utcOffset}): ${cell.label}`)
   }
   return lines.join('\n')
 }
@@ -717,7 +715,7 @@ export default function TimezonePage() {
                   <p style={{ color: accent.text }} className="text-[10px] uppercase tracking-wide mb-0.5">{city.flag} {city.label}</p>
                   <p className="text-white text-base font-semibold tabular-nums leading-none mb-0.5">{time}</p>
                   <p className="text-white/30 text-[10px]">{date}</p>
-                  <p style={{ color: accent.text }} className="text-[10px]">{abbr} · {getUTCOffsetString(city.iana)}</p>
+                  <p style={{ color: accent.text }} className="text-[10px]">{getUTCOffsetString(city.iana)}</p>
                 </div>
               )
             })}
@@ -880,7 +878,7 @@ export default function TimezonePage() {
                           className="text-left px-3 py-2.5 font-semibold text-xs uppercase tracking-widest whitespace-nowrap"
                           style={{ color: 'rgba(240,117,88,0.7)' }}
                         >
-                          {city.flag} {city.label} ({getTzAbbr(new Date(), city.iana)} · {getUTCOffsetString(city.iana)})
+                          {city.flag} {city.label} ({getUTCOffsetString(city.iana)})
                         </th>
                       ))}
                       <th className="px-2 py-2.5" />
