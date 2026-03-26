@@ -857,8 +857,11 @@ export default function TimezonePage() {
           </div>
         )}
 
-        {/* Results */}
-        {results && results.length > 0 && (
+      </div>{/* end max-w-3xl */}
+
+      {/* Results — wider container so table doesn't scroll horizontally on desktop */}
+      {results && results.length > 0 && (
+        <div className="max-w-6xl mx-auto px-4 pb-8">
           <div>
             <div
               className="rounded-2xl overflow-hidden"
@@ -868,19 +871,19 @@ export default function TimezonePage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr style={{ background: '#061c26', borderBottom: '1px solid rgba(240,117,88,0.15)' }}>
-                      <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-widest whitespace-nowrap" style={{ color: 'rgba(240,117,88,0.7)', minWidth: '220px' }}>
+                      <th className="text-left px-3 py-2.5 font-semibold text-xs uppercase tracking-widest whitespace-nowrap" style={{ color: 'rgba(240,117,88,0.7)', minWidth: '180px' }}>
                         Slot
                       </th>
                       {selectedCities.map(city => (
                         <th
                           key={city.iana}
-                          className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-widest whitespace-nowrap"
+                          className="text-left px-3 py-2.5 font-semibold text-xs uppercase tracking-widest whitespace-nowrap"
                           style={{ color: 'rgba(240,117,88,0.7)' }}
                         >
                           {city.flag} {city.label} ({getTzAbbr(new Date(), city.iana)} · {getUTCOffsetString(city.iana)})
                         </th>
                       ))}
-                      <th className="px-2 py-3" />
+                      <th className="px-2 py-2.5" />
                     </tr>
                   </thead>
                   <tbody>
@@ -892,13 +895,13 @@ export default function TimezonePage() {
                           borderBottom: '1px solid rgba(240,117,88,0.08)',
                         }}
                       >
-                        <td className="px-4 py-3 font-medium whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.5)', minWidth: '220px' }}>
+                        <td className="px-3 py-2.5 font-medium whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.5)', minWidth: '180px' }}>
                           {row.fullSlotLabel}
                         </td>
                         {row.cells.map((cell, j) => (
                           <td
                             key={j}
-                            className="px-4 py-3 whitespace-nowrap"
+                            className="px-3 py-2.5 whitespace-nowrap"
                             style={{
                               color: cell.isSource ? '#f07558' : 'rgba(255,255,255,0.85)',
                               background: cell.isSource ? 'rgba(240,117,88,0.06)' : undefined,
@@ -915,7 +918,7 @@ export default function TimezonePage() {
                             )}
                           </td>
                         ))}
-                        <td className="px-2 py-3">
+                        <td className="px-2 py-2.5">
                           <button
                             onClick={() => handleCopyRow(i)}
                             title="Copy this row"
@@ -948,9 +951,9 @@ export default function TimezonePage() {
               </p>
             )}
           </div>
-        )}
+        </div>
+      )}
 
-      </div>
     </div>
   )
 }
