@@ -764,6 +764,8 @@ export default function TimezonePage() {
   const [addedExtras, setAddedExtras] = useState<TZOption[]>([])
   const [showDropdown, setShowDropdown] = useState(false)
   const [citySearch, setCitySearch] = useState('')
+  const [showConvertDropdown, setShowConvertDropdown] = useState(false)
+  const [convertSearch, setConvertSearch] = useState('')
   const [results, setResults] = useState<ConvertedSlot[] | null>(null)
   const [parsedSlots, setParsedSlots] = useState<TimeSlot[] | null>(null)
   const [parseError, setParseError] = useState('')
@@ -771,6 +773,7 @@ export default function TimezonePage() {
   const [copiedRow, setCopiedRow] = useState<number | null>(null)
   const [now, setNow] = useState(new Date())
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const convertDropdownRef = useRef<HTMLDivElement>(null)
 
   // Snap to next minute boundary so all clocks tick together
   useEffect(() => {
@@ -851,6 +854,13 @@ export default function TimezonePage() {
     if (alreadyShown) return false
     if (!citySearch.trim()) return true
     return c.label.toLowerCase().includes(citySearch.toLowerCase())
+  }).slice(0, 8)
+
+  const convertSearchResults = ALL_SEARCHABLE_CITIES.filter(c => {
+    const alreadyShown = allCities.find(a => a.iana === c.iana && a.label === c.label)
+    if (alreadyShown) return false
+    if (!convertSearch.trim()) return true
+    return c.label.toLowerCase().includes(convertSearch.toLowerCase())
   }).slice(0, 8)
 
   // Derive source timezone info from first parsed slot
@@ -1003,10 +1013,10 @@ export default function TimezonePage() {
           </label>
           <div className="flex flex-wrap gap-2 justify-center">
             {allCities.map(city => {
-              const active = !!selectedCities.find(c => c.iana === city.iana)
+              const active = !!selectedCities.find(c => c.iana === city.iana && c.label === city.label)
               return (
                 <button
-                  key={city.iana}
+                  key={city.iana + city.label}
                   onClick={() => toggleCity(city)}
                   className="px-3 py-1.5 rounded-xl text-sm font-medium transition-all"
                   style={{
@@ -1020,7 +1030,54 @@ export default function TimezonePage() {
               )
             })}
 
-
+            {/* Add city to Convert To */}
+            <div className="relative" ref={convertDropdownRef}>
+              <button
+                onClick={() => { setShowConvertDropdown(v => !v); setConvertSearch('') }}
+                className="px-3 py-1.5 rounded-xl text-sm font-medium transition-all"
+                style={{
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: 'rgba(255,255,255,0.5)',
+                }}
+              >
+                + Add city
+              </button>
+              {showConvertDropdown && (
+                <div
+                  className="absolute left-0 top-full mt-1 z-20 rounded-xl shadow-xl"
+                  style={{ background: '#0a2535', border: '1px solid rgba(240,117,88,0.2)', minWidth: '200px' }}
+                >
+                  <div className="px-3 pt-3 pb-2">
+                    <input
+                      autoFocus
+                      type="text"
+                      placeholder="Search city…"
+                      value={convertSearch}
+                      onChange={e => setConvertSearch(e.target.value)}
+                      className="w-full rounded-lg px-3 py-2 text-sm outline-none"
+                      style={{ background: '#061c26', border: '1px solid rgba(240,117,88,0.3)', color: 'white' }}
+                    />
+                  </div>
+                  <div className="max-h-48 overflow-y-auto">
+                    {convertSearchResults.length === 0 ? (
+                      <p className="px-4 py-3 text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>No cities found</p>
+                    ) : convertSearchResults.map(city => (
+                      <button
+                        key={city.iana + city.label}
+                        onClick={() => { addExtraCity(city); setShowConvertDropdown(false); setConvertSearch('') }}
+                        className="w-full text-left px-4 py-2.5 text-sm transition-colors"
+                        style={{ color: 'rgba(255,255,255,0.8)' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(240,117,88,0.1)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                      >
+                        {city.flag} {city.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
