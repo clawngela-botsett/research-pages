@@ -720,9 +720,14 @@ function convertSlots(slots: TimeSlot[], targetZones: TZOption[]): ConvertedSlot
 
     const startTime = formatTime12(slot.startH, slot.startM)
     const endTime = formatTime12(slot.endH, slot.endM)
+    // Always derive weekday + date from the actual UTC time so it's never missing
+    const srcWdFmt  = new Intl.DateTimeFormat('en-US', { timeZone: slot.sourceTz, weekday: 'short' })
+    const srcDFmt   = new Intl.DateTimeFormat('en-US', { timeZone: slot.sourceTz, day: 'numeric' })
+    const srcMFmt   = new Intl.DateTimeFormat('en-US', { timeZone: slot.sourceTz, month: 'numeric' })
+    const srcLabel  = `${srcWdFmt.format(startUTC)} ${srcDFmt.format(startUTC)}/${srcMFmt.format(startUTC)}`
     const fullSlotLabel = slot.isSingleTime
-      ? `${slot.label} · ${startTime} ${slot.sourceTzAbbr}`
-      : `${slot.label} · ${startTime}–${endTime} ${slot.sourceTzAbbr}`
+      ? `${srcLabel} · ${startTime} ${slot.sourceTzAbbr}`
+      : `${srcLabel} · ${startTime}–${endTime} ${slot.sourceTzAbbr}`
 
     return { slotLabel: slot.label, fullSlotLabel, cells }
   })
