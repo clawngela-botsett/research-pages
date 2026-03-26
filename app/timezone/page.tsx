@@ -805,12 +805,10 @@ function getCurrentTime(tz: string): { time: string; date: string; abbr: string 
     minute: '2-digit',
     hour12: true,
   }).format(now)
-  const date = new Intl.DateTimeFormat('en-US', {
-    timeZone: tz,
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  }).format(now)
+  const wdPart  = new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'short' }).format(now)
+  const dayPart = new Intl.DateTimeFormat('en-US', { timeZone: tz, day: 'numeric' }).format(now)
+  const monPart = new Intl.DateTimeFormat('en-US', { timeZone: tz, month: 'short' }).format(now)
+  const date = `${wdPart} ${dayPart} ${monPart}`  // "Thu 26 Mar"
   const abbr = getTzAbbr(now, tz)
   return { time, date, abbr }
 }
