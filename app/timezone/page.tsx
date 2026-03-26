@@ -755,18 +755,9 @@ export default function TimezonePage() {
             onFocus={e => (e.currentTarget.style.borderColor = 'rgba(240,117,88,0.5)')}
             onBlur={e => (e.currentTarget.style.borderColor = 'rgba(240,117,88,0.2)')}
           />
-          <div className="mt-3 space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-widest mb-1.5" style={{ color: 'rgba(240,117,88,0.5)' }}>Supported formats</p>
-            {[
-              '31/3 @ 3:30-4p CST',
-              '1st April 5pm Chicago',
-              '30 march at 6pm LA time',
-              'Mon 31/3 12-1230pm London',
-              'April 1st 9am-10am Dubai',
-            ].map(ex => (
-              <p key={ex} className="text-xs font-mono" style={{ color: 'rgba(255,255,255,0.25)' }}>{ex}</p>
-            ))}
-          </div>
+          <p className="mt-2 text-xs font-mono leading-relaxed" style={{ color: 'rgba(255,255,255,0.2)' }}>
+            31/3 @ 3:30-4p CST &nbsp;·&nbsp; 1st April 5pm Chicago &nbsp;·&nbsp; 30 march at 6pm LA &nbsp;·&nbsp; Mon 31/3 12-1230pm London &nbsp;·&nbsp; April 1st 9am-10am Dubai
+          </p>
         </div>
 
         {/* Target timezones */}
