@@ -7,6 +7,7 @@ import { ALL_SEARCHABLE_CITIES } from './cityData'
 // ── Timezone data ─────────────────────────────────────────────────────────────
 
 const TZ_MAP: Record<string, string> = {
+  // Americas
   CST: 'America/Chicago',
   CDT: 'America/Chicago',
   EST: 'America/New_York',
@@ -15,17 +16,57 @@ const TZ_MAP: Record<string, string> = {
   PDT: 'America/Los_Angeles',
   MST: 'America/Denver',
   MDT: 'America/Denver',
+  AST: 'America/Puerto_Rico',    // Atlantic Standard Time
+  ADT: 'America/Halifax',        // Atlantic Daylight Time
+  NST: 'America/St_Johns',       // Newfoundland
+  NDT: 'America/St_Johns',
+  AKT: 'America/Anchorage',      // Alaska (generic)
+  AKST: 'America/Anchorage',
+  AKDT: 'America/Anchorage',
+  HST: 'Pacific/Honolulu',       // Hawaii
+  BRT: 'America/Sao_Paulo',      // Brazil
+  ART: 'America/Argentina/Buenos_Aires',
+  COT: 'America/Bogota',         // Colombia
+  PET: 'America/Lima',           // Peru
+  // Europe
   GMT: 'UTC',
   UTC: 'UTC',
-  BST: 'Europe/London',
-  CET: 'Europe/Paris',
+  BST: 'Europe/London',          // British Summer Time
+  WET: 'Europe/Lisbon',          // Western European Time
+  WEST: 'Europe/Lisbon',
+  CET: 'Europe/Paris',           // Central European Time
   CEST: 'Europe/Paris',
-  IST: 'Asia/Kolkata',
-  GST: 'Asia/Dubai',
+  EET: 'Europe/Athens',          // Eastern European Time
+  EEST: 'Europe/Athens',
+  MSK: 'Europe/Moscow',          // Moscow
+  TRT: 'Europe/Istanbul',        // Turkey
+  // Middle East & Africa
+  IST: 'Asia/Kolkata',           // Indian Standard Time
+  GST: 'Asia/Dubai',             // Gulf Standard Time
+  AST_ME: 'Asia/Riyadh',         // Arabia Standard Time (alias)
   SAST: 'Africa/Johannesburg',
-  AEST: 'Australia/Sydney',
-  JST: 'Asia/Tokyo',
+  EAT: 'Africa/Nairobi',         // East Africa Time
+  CAT: 'Africa/Harare',          // Central Africa Time
+  WAT: 'Africa/Lagos',           // West Africa Time
+  // Asia-Pacific
+  PKT: 'Asia/Karachi',           // Pakistan
+  BST_BD: 'Asia/Dhaka',          // Bangladesh (same abbr as British, context-dependent)
+  ICT: 'Asia/Bangkok',           // Indochina Time
+  WIB: 'Asia/Jakarta',           // Western Indonesian
+  MYT: 'Asia/Kuala_Lumpur',      // Malaysia
   SGT: 'Asia/Singapore',
+  PHT: 'Asia/Manila',            // Philippines
+  HKT: 'Asia/Hong_Kong',         // Hong Kong
+  CST_CN: 'Asia/Shanghai',       // China (same abbr, context-dependent)
+  KST: 'Asia/Seoul',             // Korea
+  JST: 'Asia/Tokyo',
+  AEST: 'Australia/Sydney',
+  AEDT: 'Australia/Sydney',
+  ACST: 'Australia/Darwin',
+  ACDT: 'Australia/Adelaide',
+  AWST: 'Australia/Perth',
+  NZST: 'Pacific/Auckland',
+  NZDT: 'Pacific/Auckland',
 }
 
 /** Natural-language timezone aliases → canonical abbreviation in TZ_MAP */
@@ -34,14 +75,39 @@ const TZ_ALIASES: [RegExp, string][] = [
   [/\b(?:NY|New\s+York|Eastern|ET)(?:\s+time)?\b/i, 'EST'],
   [/\b(?:Chicago|Central|CT)(?:\s+time)?\b/i, 'CST'],
   [/\b(?:Denver|Mountain|MT)(?:\s+time)?\b/i, 'MST'],
+  [/\b(?:Halifax|Atlantic)(?:\s+time)?\b/i, 'AST'],
+  [/\b(?:Newfoundland)(?:\s+time)?\b/i, 'NST'],
+  [/\b(?:Alaska|AK)(?:\s+time)?\b/i, 'AKST'],
+  [/\b(?:Hawaii|Honolulu)(?:\s+time)?\b/i, 'HST'],
   [/\b(?:London|UK|British)(?:\s+time)?\b/i, 'GMT'],
-  [/\b(?:Paris|French|European)(?:\s+time)?\b/i, 'CET'],
+  [/\b(?:Paris|France|French|European|Central\s+European)(?:\s+time)?\b/i, 'CET'],
+  [/\b(?:Berlin|Germany|German)(?:\s+time)?\b/i, 'CET'],
+  [/\b(?:Rome|Italy|Italian|Milan|Amsterdam|Brussels|Madrid|Zurich|Vienna|Stockholm|Oslo|Copenhagen|Warsaw)(?:\s+time)?\b/i, 'CET'],
+  [/\b(?:Athens|Greece|Greek|Bucharest|Romania|Eastern\s+European|EET)(?:\s+time)?\b/i, 'EET'],
+  [/\b(?:Helsinki|Sofia|Kyiv|Vilnius|Riga|Tallinn)(?:\s+time)?\b/i, 'EET'],
+  [/\b(?:Moscow|Russia|Russian|MSK)(?:\s+time)?\b/i, 'MSK'],
+  [/\b(?:Istanbul|Turkey|Ankara|TRT)(?:\s+time)?\b/i, 'TRT'],
+  [/\b(?:Lisbon|Portugal|Portuguese|WET)(?:\s+time)?\b/i, 'WET'],
   [/\b(?:Dubai|UAE|Gulf)(?:\s+time)?\b/i, 'GST'],
-  [/\b(?:Cape\s+Town|Johannesburg|South\s+Africa)(?:\s+time)?\b/i, 'SAST'],
-  [/\b(?:Sydney|Australian\s+Eastern)(?:\s+time)?\b/i, 'AEST'],
-  [/\b(?:Tokyo|Japan)(?:\s+time)?\b/i, 'JST'],
-  [/\b(?:Singapore)(?:\s+time)?\b/i, 'SGT'],
-  [/\b(?:Mumbai|Delhi|India)(?:\s+time)?\b/i, 'IST'],
+  [/\b(?:Riyadh|Saudi|Arabia|Doha|Qatar|Kuwait|Baghdad|Iraq)(?:\s+time)?\b/i, 'AST'],
+  [/\b(?:Cape\s+Town|Johannesburg|South\s+Africa|SAST)(?:\s+time)?\b/i, 'SAST'],
+  [/\b(?:Nairobi|Kenya|East\s+Africa|EAT)(?:\s+time)?\b/i, 'EAT'],
+  [/\b(?:Lagos|Nigeria|West\s+Africa|WAT)(?:\s+time)?\b/i, 'WAT'],
+  [/\b(?:Harare|Zimbabwe|Central\s+Africa|CAT)(?:\s+time)?\b/i, 'CAT'],
+  [/\b(?:Karachi|Pakistan|PKT)(?:\s+time)?\b/i, 'PKT'],
+  [/\b(?:Mumbai|Delhi|India|IST|Bangalore|Chennai)(?:\s+time)?\b/i, 'IST'],
+  [/\b(?:Bangkok|Thailand|Indochina|ICT|Hanoi|Vietnam)(?:\s+time)?\b/i, 'ICT'],
+  [/\b(?:Jakarta|Indonesia|WIB)(?:\s+time)?\b/i, 'WIB'],
+  [/\b(?:Kuala\s+Lumpur|Malaysia|MYT)(?:\s+time)?\b/i, 'MYT'],
+  [/\b(?:Singapore|SGT)(?:\s+time)?\b/i, 'SGT'],
+  [/\b(?:Manila|Philippines|PHT)(?:\s+time)?\b/i, 'PHT'],
+  [/\b(?:Hong\s+Kong|HKT)(?:\s+time)?\b/i, 'HKT'],
+  [/\b(?:Seoul|Korea|Korean|KST)(?:\s+time)?\b/i, 'KST'],
+  [/\b(?:Tokyo|Japan|JST|Osaka)(?:\s+time)?\b/i, 'JST'],
+  [/\b(?:Sydney|Melbourne|Australian\s+Eastern|AEST|AEDT)(?:\s+time)?\b/i, 'AEST'],
+  [/\b(?:Perth|Western\s+Australia|AWST)(?:\s+time)?\b/i, 'AWST'],
+  [/\b(?:Adelaide|Australian\s+Central|ACST|ACDT)(?:\s+time)?\b/i, 'ACST'],
+  [/\b(?:Auckland|New\s+Zealand|NZST|NZDT)(?:\s+time)?\b/i, 'NZST'],
 ]
 
 interface TZOption {
@@ -268,7 +334,7 @@ function parseLine(line: string): TimeSlot[] {
   const normLine = line.replace(/\b(\d{1,2})(?:st|nd|rd|th)\b/gi, '$1')
 
   // Detect source timezone — try standard abbreviations first, then natural-language aliases
-  const tzMatch = normLine.match(/\b(CST|CDT|EST|EDT|PST|PDT|MST|MDT|GMT|UTC|BST|CET|CEST|IST|GST|SAST|AEST|JST|SGT)\b/i)
+  const tzMatch = normLine.match(/\b(CST|CDT|EST|EDT|PST|PDT|MST|MDT|AST|ADT|NST|NDT|AKST|AKDT|HST|BRT|ART|COT|PET|GMT|UTC|BST|WET|WEST|CET|CEST|EET|EEST|MSK|TRT|IST|GST|SAST|EAT|CAT|WAT|PKT|ICT|WIB|MYT|SGT|PHT|HKT|KST|JST|AEST|AEDT|ACST|ACDT|AWST|NZST|NZDT)\b/i)
   let tzAbbr: string | null = tzMatch ? tzMatch[1].toUpperCase() : null
   if (!tzAbbr) {
     for (const [pattern, abbr] of TZ_ALIASES) {
@@ -294,7 +360,7 @@ function parseLine(line: string): TimeSlot[] {
   // Extract all time ranges from the line
   // Strip the timezone abbreviation and date info first to avoid false matches
   const stripped = normLine
-    .replace(/\b(CST|CDT|EST|EDT|PST|PDT|MST|MDT|GMT|UTC|BST|CET|CEST|IST|GST|SAST|AEST|JST|SGT)\b/gi, '')
+    .replace(/\b(CST|CDT|EST|EDT|PST|PDT|MST|MDT|AST|ADT|NST|NDT|AKST|AKDT|HST|BRT|ART|COT|PET|GMT|UTC|BST|WET|WEST|CET|CEST|EET|EEST|MSK|TRT|IST|GST|SAST|EAT|CAT|WAT|PKT|ICT|WIB|MYT|SGT|PHT|HKT|KST|JST|AEST|AEDT|ACST|ACDT|AWST|NZST|NZDT)\b/gi, '')
     .replace(/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b/gi, '')
     .replace(/\b\d{1,2}\/\d{1,2}\b/g, '')
     // Strip dates — Day Month first (European), then Month Day
