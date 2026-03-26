@@ -280,10 +280,10 @@ function parseLine(line: string): TimeSlot[] {
   const sourceTz = tzAbbr ? TZ_MAP[tzAbbr] : null
   if (!sourceTz || !tzAbbr) return []
 
-  // Extract date: look for m/d pattern, "Month Day", or "Day Month"
+  // Extract date: DD/MM first, then Day Month (European default), then Month Day fallback
   const dateMatch = line.match(/\b(\d{1,2}\/\d{1,2})\b/) ||
-    line.match(/\b((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*\s+\d{1,2})\b/i) ||
-    line.match(/\b(\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*)\b/i)
+    line.match(/\b(\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*)\b/i) ||
+    line.match(/\b((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*\s+\d{1,2})\b/i)
   if (!dateMatch) return []
   const dateInfo = parseDate(dateMatch[1])
   if (!dateInfo) return []
@@ -299,9 +299,9 @@ function parseLine(line: string): TimeSlot[] {
     .replace(/\b(CST|CDT|EST|EDT|PST|PDT|MST|MDT|GMT|UTC|BST|CET|CEST|IST|GST|SAST|AEST|JST|SGT)\b/gi, '')
     .replace(/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b/gi, '')
     .replace(/\b\d{1,2}\/\d{1,2}\b/g, '')
-    // Strip "Month Day" (March 31) and "Day Month" (31 March) formats
-    .replace(/\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*\s+\d{1,2}\b/gi, '')
+    // Strip dates — Day Month first (European), then Month Day
     .replace(/\b\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*\b/gi, '')
+    .replace(/\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*\s+\d{1,2}\b/gi, '')
     // Strip natural-language timezone phrases
     .replace(/\b(?:LA|Los\s+Angeles|Pacific|NY|New\s+York|Eastern|Chicago|Central|Denver|Mountain|London|UK|British|Paris|French|European|Dubai|UAE|Gulf|Cape\s+Town|Johannesburg|South\s+Africa|Sydney|Australian\s+Eastern|Tokyo|Japan|Singapore|Mumbai|Delhi|India)\s+time\b/gi, '')
     // Strip filler words
