@@ -29,18 +29,18 @@ const TZ_MAP: Record<string, string> = {
 
 /** Natural-language timezone aliases → canonical abbreviation in TZ_MAP */
 const TZ_ALIASES: [RegExp, string][] = [
-  [/\b(?:LA|Los\s+Angeles|Pacific)[\s-]*[Tt]ime\b/, 'PST'],
-  [/\b(?:NY|New\s+York|Eastern)[\s-]*[Tt]ime\b/, 'EST'],
-  [/\b(?:Chicago|Central)[\s-]*[Tt]ime\b/, 'CST'],
-  [/\b(?:Denver|Mountain)[\s-]*[Tt]ime\b/, 'MST'],
-  [/\b(?:London|UK|British)[\s-]*[Tt]ime\b/, 'GMT'],
-  [/\b(?:Paris|French|European)[\s-]*[Tt]ime\b/, 'CET'],
-  [/\b(?:Dubai|UAE|Gulf)[\s-]*[Tt]ime\b/, 'GST'],
-  [/\b(?:Cape\s+Town|Johannesburg|South\s+Africa|SAST)[\s-]*[Tt]ime\b/, 'SAST'],
-  [/\b(?:Sydney|Australian\s+Eastern)[\s-]*[Tt]ime\b/, 'AEST'],
-  [/\b(?:Tokyo|Japan)[\s-]*[Tt]ime\b/, 'JST'],
-  [/\b(?:Singapore)[\s-]*[Tt]ime\b/, 'SGT'],
-  [/\b(?:Mumbai|Delhi|India)[\s-]*[Tt]ime\b/, 'IST'],
+  [/\b(?:LA|Los\s+Angeles|Pacific)[\s-]*time\b/i, 'PST'],
+  [/\b(?:NY|New\s+York|Eastern)[\s-]*time\b/i, 'EST'],
+  [/\b(?:Chicago|Central)[\s-]*time\b/i, 'CST'],
+  [/\b(?:Denver|Mountain)[\s-]*time\b/i, 'MST'],
+  [/\b(?:London|UK|British)[\s-]*time\b/i, 'GMT'],
+  [/\b(?:Paris|French|European)[\s-]*time\b/i, 'CET'],
+  [/\b(?:Dubai|UAE|Gulf)[\s-]*time\b/i, 'GST'],
+  [/\b(?:Cape\s+Town|Johannesburg|South\s+Africa|SAST)[\s-]*time\b/i, 'SAST'],
+  [/\b(?:Sydney|Australian\s+Eastern)[\s-]*time\b/i, 'AEST'],
+  [/\b(?:Tokyo|Japan)[\s-]*time\b/i, 'JST'],
+  [/\b(?:Singapore)[\s-]*time\b/i, 'SGT'],
+  [/\b(?:Mumbai|Delhi|India)[\s-]*time\b/i, 'IST'],
 ]
 
 interface TZOption {
