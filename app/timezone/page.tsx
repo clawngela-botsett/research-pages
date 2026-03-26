@@ -57,12 +57,59 @@ const DEFAULT_CITIES: TZOption[] = [
   { label: 'Dubai', flag: '🇦🇪', iana: 'Asia/Dubai' },
 ]
 
-const EXTRA_CITIES: TZOption[] = [
-  { label: 'Sydney', flag: '🇦🇺', iana: 'Australia/Sydney' },
-  { label: 'Tokyo', flag: '🇯🇵', iana: 'Asia/Tokyo' },
-  { label: 'Paris', flag: '🇫🇷', iana: 'Europe/Paris' },
-  { label: 'Singapore', flag: '🇸🇬', iana: 'Asia/Singapore' },
+const ALL_SEARCHABLE_CITIES: TZOption[] = [
+  { label: 'Los Angeles', flag: '🇺🇸', iana: 'America/Los_Angeles' },
+  { label: 'New York', flag: '🇺🇸', iana: 'America/New_York' },
+  { label: 'Chicago', flag: '🇺🇸', iana: 'America/Chicago' },
+  { label: 'Denver', flag: '🇺🇸', iana: 'America/Denver' },
+  { label: 'Phoenix', flag: '🇺🇸', iana: 'America/Phoenix' },
+  { label: 'Miami', flag: '🇺🇸', iana: 'America/New_York' },
+  { label: 'Houston', flag: '🇺🇸', iana: 'America/Chicago' },
+  { label: 'Toronto', flag: '🇨🇦', iana: 'America/Toronto' },
+  { label: 'Vancouver', flag: '🇨🇦', iana: 'America/Vancouver' },
+  { label: 'Mexico City', flag: '🇲🇽', iana: 'America/Mexico_City' },
   { label: 'São Paulo', flag: '🇧🇷', iana: 'America/Sao_Paulo' },
+  { label: 'Buenos Aires', flag: '🇦🇷', iana: 'America/Argentina/Buenos_Aires' },
+  { label: 'Bogotá', flag: '🇨🇴', iana: 'America/Bogota' },
+  { label: 'London', flag: '🇬🇧', iana: 'Europe/London' },
+  { label: 'Paris', flag: '🇫🇷', iana: 'Europe/Paris' },
+  { label: 'Berlin', flag: '🇩🇪', iana: 'Europe/Berlin' },
+  { label: 'Amsterdam', flag: '🇳🇱', iana: 'Europe/Amsterdam' },
+  { label: 'Madrid', flag: '🇪🇸', iana: 'Europe/Madrid' },
+  { label: 'Rome', flag: '🇮🇹', iana: 'Europe/Rome' },
+  { label: 'Zurich', flag: '🇨🇭', iana: 'Europe/Zurich' },
+  { label: 'Stockholm', flag: '🇸🇪', iana: 'Europe/Stockholm' },
+  { label: 'Warsaw', flag: '🇵🇱', iana: 'Europe/Warsaw' },
+  { label: 'Istanbul', flag: '🇹🇷', iana: 'Europe/Istanbul' },
+  { label: 'Moscow', flag: '🇷🇺', iana: 'Europe/Moscow' },
+  { label: 'Cairo', flag: '🇪🇬', iana: 'Africa/Cairo' },
+  { label: 'Cape Town', flag: '🇿🇦', iana: 'Africa/Johannesburg' },
+  { label: 'Johannesburg', flag: '🇿🇦', iana: 'Africa/Johannesburg' },
+  { label: 'Nairobi', flag: '🇰🇪', iana: 'Africa/Nairobi' },
+  { label: 'Lagos', flag: '🇳🇬', iana: 'Africa/Lagos' },
+  { label: 'Casablanca', flag: '🇲🇦', iana: 'Africa/Casablanca' },
+  { label: 'Dubai', flag: '🇦🇪', iana: 'Asia/Dubai' },
+  { label: 'Riyadh', flag: '🇸🇦', iana: 'Asia/Riyadh' },
+  { label: 'Tel Aviv', flag: '🇮🇱', iana: 'Asia/Jerusalem' },
+  { label: 'Mumbai', flag: '🇮🇳', iana: 'Asia/Kolkata' },
+  { label: 'Delhi', flag: '🇮🇳', iana: 'Asia/Kolkata' },
+  { label: 'Bangalore', flag: '🇮🇳', iana: 'Asia/Kolkata' },
+  { label: 'Karachi', flag: '🇵🇰', iana: 'Asia/Karachi' },
+  { label: 'Dhaka', flag: '🇧🇩', iana: 'Asia/Dhaka' },
+  { label: 'Bangkok', flag: '🇹🇭', iana: 'Asia/Bangkok' },
+  { label: 'Singapore', flag: '🇸🇬', iana: 'Asia/Singapore' },
+  { label: 'Kuala Lumpur', flag: '🇲🇾', iana: 'Asia/Kuala_Lumpur' },
+  { label: 'Jakarta', flag: '🇮🇩', iana: 'Asia/Jakarta' },
+  { label: 'Hong Kong', flag: '🇭🇰', iana: 'Asia/Hong_Kong' },
+  { label: 'Shanghai', flag: '🇨🇳', iana: 'Asia/Shanghai' },
+  { label: 'Beijing', flag: '🇨🇳', iana: 'Asia/Shanghai' },
+  { label: 'Seoul', flag: '🇰🇷', iana: 'Asia/Seoul' },
+  { label: 'Tokyo', flag: '🇯🇵', iana: 'Asia/Tokyo' },
+  { label: 'Sydney', flag: '🇦🇺', iana: 'Australia/Sydney' },
+  { label: 'Melbourne', flag: '🇦🇺', iana: 'Australia/Melbourne' },
+  { label: 'Brisbane', flag: '🇦🇺', iana: 'Australia/Brisbane' },
+  { label: 'Perth', flag: '🇦🇺', iana: 'Australia/Perth' },
+  { label: 'Auckland', flag: '🇳🇿', iana: 'Pacific/Auckland' },
 ]
 
 // ── UTC offset helpers ────────────────────────────────────────────────────────
@@ -582,6 +629,7 @@ export default function TimezonePage() {
   ])
   const [addedExtras, setAddedExtras] = useState<TZOption[]>([])
   const [showDropdown, setShowDropdown] = useState(false)
+  const [citySearch, setCitySearch] = useState('')
   const [results, setResults] = useState<ConvertedSlot[] | null>(null)
   const [parsedSlots, setParsedSlots] = useState<TimeSlot[] | null>(null)
   const [parseError, setParseError] = useState('')
@@ -615,13 +663,21 @@ export default function TimezonePage() {
   }
 
   function addExtraCity(city: TZOption) {
-    if (!addedExtras.find(c => c.iana === city.iana)) {
+    if (!addedExtras.find(c => c.iana === city.iana && c.label === city.label)) {
       setAddedExtras(prev => [...prev, city])
     }
-    if (!selectedCities.find(c => c.iana === city.iana)) {
+    if (!selectedCities.find(c => c.iana === city.iana && c.label === city.label)) {
       setSelectedCities(prev => [...prev, city])
     }
     setShowDropdown(false)
+    setCitySearch('')
+  }
+
+  function removeFromClock(city: TZOption) {
+    setSelectedCities(prev => {
+      if (prev.length <= 1) return prev
+      return prev.filter(c => !(c.iana === city.iana && c.label === city.label))
+    })
   }
 
   function handleConvert() {
@@ -656,9 +712,12 @@ export default function TimezonePage() {
     })
   }
 
-  const availableExtras = EXTRA_CITIES.filter(
-    c => !addedExtras.find(e => e.iana === c.iana)
-  )
+  const searchResults = ALL_SEARCHABLE_CITIES.filter(c => {
+    const alreadyShown = allCities.find(a => a.iana === c.iana && a.label === c.label)
+    if (alreadyShown) return false
+    if (!citySearch.trim()) return true
+    return c.label.toLowerCase().includes(citySearch.toLowerCase())
+  }).slice(0, 8)
 
   // Derive source timezone info from first parsed slot
   const sourceTzAbbr = parsedSlots?.[0]?.sourceTzAbbr ?? ''
@@ -711,7 +770,15 @@ export default function TimezonePage() {
               ]
               const accent = accents[idx % accents.length]
               return (
-                <div key={city.iana} style={{ background: `#061c26`, border: `1px solid ${accent.border}`, borderRadius: '10px' }} className="px-3 py-2 min-w-[110px]">
+                <div key={city.iana + city.label} style={{ background: `#061c26`, border: `1px solid ${accent.border}`, borderRadius: '10px' }} className="relative px-3 py-2 min-w-[110px]">
+                  {selectedCities.length > 1 && (
+                    <button
+                      onClick={() => removeFromClock(city)}
+                      className="absolute top-1 right-1 text-white/20 hover:text-white/60 transition-colors leading-none"
+                      style={{ fontSize: '10px', lineHeight: 1 }}
+                      title="Remove"
+                    >✕</button>
+                  )}
                   <p style={{ color: accent.text }} className="text-[10px] uppercase tracking-wide mb-0.5">{city.flag} {city.label}</p>
                   <p className="text-white text-base font-semibold tabular-nums leading-none mb-0.5">{time}</p>
                   <p className="text-white/30 text-[10px]">{date}</p>
@@ -719,16 +786,48 @@ export default function TimezonePage() {
                 </div>
               )
             })}
-            {/* Add city button */}
-            <button
-              onClick={() => {
-                const allCities = [...DEFAULT_CITIES, ...EXTRA_CITIES]
-                const next = allCities.find(c => !selectedCities.find(s => s.iana === c.iana))
-                if (next) setSelectedCities(prev => [...prev, next])
-              }}
-              className="bg-[#061c26] border border-[#f07558]/15 rounded-lg px-3 py-2 min-w-[48px] flex items-center justify-center text-[#f07558]/50 hover:text-[#f07558] hover:border-[#f07558]/30 transition-colors text-lg"
-              title="Add city"
-            >＋</button>
+            {/* Add city search button */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => { setShowDropdown(v => !v); setCitySearch('') }}
+                className="bg-[#061c26] border border-[#f07558]/15 rounded-lg px-3 py-2 min-w-[48px] flex items-center justify-center text-[#f07558]/50 hover:text-[#f07558] hover:border-[#f07558]/30 transition-colors text-lg"
+                title="Add city"
+              >＋</button>
+              {showDropdown && (
+                <div
+                  className="absolute left-0 top-full mt-1 z-20 rounded-xl shadow-xl"
+                  style={{ background: '#0a2535', border: '1px solid rgba(240,117,88,0.2)', minWidth: '200px' }}
+                >
+                  <div className="px-3 pt-3 pb-2">
+                    <input
+                      autoFocus
+                      type="text"
+                      placeholder="Search city…"
+                      value={citySearch}
+                      onChange={e => setCitySearch(e.target.value)}
+                      className="w-full rounded-lg px-3 py-2 text-sm outline-none"
+                      style={{ background: '#061c26', border: '1px solid rgba(240,117,88,0.3)', color: 'white' }}
+                    />
+                  </div>
+                  <div className="max-h-48 overflow-y-auto">
+                    {searchResults.length === 0 ? (
+                      <p className="px-4 py-3 text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>No cities found</p>
+                    ) : searchResults.map(city => (
+                      <button
+                        key={city.iana + city.label}
+                        onClick={() => addExtraCity(city)}
+                        className="w-full text-left px-4 py-2.5 text-sm transition-colors"
+                        style={{ color: 'rgba(255,255,255,0.8)' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(240,117,88,0.1)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                      >
+                        {city.flag} {city.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -787,41 +886,7 @@ export default function TimezonePage() {
               )
             })}
 
-            {/* Add city dropdown */}
-            <div className="relative" ref={dropdownRef}>
-              {availableExtras.length > 0 && (
-                <button
-                  onClick={() => setShowDropdown(v => !v)}
-                  className="px-3 py-1.5 rounded-xl text-sm font-medium transition-all"
-                  style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    color: 'rgba(255,255,255,0.5)',
-                  }}
-                >
-                  + Add city
-                </button>
-              )}
-              {showDropdown && (
-                <div
-                  className="absolute left-0 top-full mt-1 z-10 rounded-xl overflow-hidden shadow-xl"
-                  style={{ background: '#0a2535', border: '1px solid rgba(240,117,88,0.2)', minWidth: '160px' }}
-                >
-                  {availableExtras.map(city => (
-                    <button
-                      key={city.iana}
-                      onClick={() => addExtraCity(city)}
-                      className="w-full text-left px-4 py-2.5 text-sm transition-colors"
-                      style={{ color: 'rgba(255,255,255,0.8)' }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(240,117,88,0.1)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                    >
-                      {city.flag} {city.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+
           </div>
         </div>
 
