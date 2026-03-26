@@ -738,12 +738,12 @@ export default function TimezonePage() {
           style={{ background: '#061c26', border: '1px solid rgba(240,117,88,0.2)' }}
         >
           <label className="block text-xs font-semibold uppercase tracking-widest mb-3 text-center" style={{ color: 'rgba(240,117,88,0.7)' }}>
-            Availability Text
+            Availability
           </label>
           <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder="Paste availability text here..."
+            placeholder="Paste availability here..."
             rows={5}
             className="w-full resize-y rounded-xl px-4 py-3 text-sm outline-none transition-colors"
             style={{
