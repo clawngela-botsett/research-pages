@@ -665,7 +665,7 @@ export default function TimezonePage() {
       className="min-h-screen"
       style={{ background: '#020e14', color: 'white' }}
     >
-      <div className="max-w-3xl mx-auto px-4 py-8">
+      <div className="max-w-5xl mx-auto px-4 py-8">
 
         {/* Back link */}
         <Link
@@ -704,7 +704,7 @@ export default function TimezonePage() {
               ]
               const accent = accents[idx % accents.length]
               return (
-                <div key={city.iana} style={{ background: `#061c26`, border: `1px solid ${accent.border}`, borderRadius: '10px' }} className="px-3 py-2 min-w-[110px]">
+                <div key={city.iana} style={{ background: `#061c26`, border: `1px solid ${accent.border}`, borderRadius: '10px' }} className="px-3 py-2 min-w-[110px] md:px-4 md:py-3 md:min-w-[130px]">
                   <p style={{ color: accent.text }} className="text-[10px] uppercase tracking-wide mb-0.5">{city.flag} {city.label}</p>
                   <p className="text-white text-base font-semibold tabular-nums leading-none mb-0.5">{time}</p>
                   <p className="text-white/30 text-[10px]">{date}</p>
@@ -725,9 +725,12 @@ export default function TimezonePage() {
           </div>
         </div>
 
+        {/* Paste box + timezone selector — side by side on desktop */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+
         {/* Paste box */}
         <div
-          className="rounded-2xl p-5 mb-6"
+          className="rounded-2xl p-5 flex flex-col"
           style={{ background: '#061c26', border: '1px solid rgba(240,117,88,0.2)' }}
         >
           <label className="block text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'rgba(240,117,88,0.7)' }}>
@@ -738,9 +741,9 @@ export default function TimezonePage() {
             onChange={e => setInput(e.target.value)}
             placeholder="Paste availability text here..."
             rows={5}
-            className="w-full resize-y rounded-xl px-4 py-3 text-sm outline-none transition-colors"
+            className="w-full flex-1 resize-y rounded-xl px-4 py-3 text-sm outline-none transition-colors"
             style={{
-              minHeight: '120px',
+              minHeight: '140px',
               background: '#061c26',
               border: '1px solid rgba(240,117,88,0.2)',
               color: 'white',
@@ -755,7 +758,7 @@ export default function TimezonePage() {
 
         {/* Target timezones */}
         <div
-          className="rounded-2xl p-5 mb-6"
+          className="rounded-2xl p-5"
           style={{ background: '#061c26', border: '1px solid rgba(240,117,88,0.2)' }}
         >
           <label className="block text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'rgba(240,117,88,0.7)' }}>
@@ -817,6 +820,7 @@ export default function TimezonePage() {
             </div>
           </div>
         </div>
+        </div>{/* end grid */}
 
         {/* Convert button */}
         <button
