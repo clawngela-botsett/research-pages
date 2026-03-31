@@ -3,3 +3,9 @@ runConfig:
   memoryMiB: 512
   maxInstances: 3
   minInstances: 0
+
+env:
+  - variable: ADD_TASK_SECRET
+    value: a247516ea75cb52f1b7304055a4615b129fb8b69
+    availability:
+      - RUNTIME
