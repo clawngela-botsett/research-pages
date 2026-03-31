@@ -29,7 +29,7 @@ const TZ_MAP: Record<string, string> = {
   COT: 'America/Bogota',         // Colombia
   PET: 'America/Lima',           // Peru
   // Europe
-  GMT: 'UTC',
+  GMT: 'Europe/London',
   UTC: 'UTC',
   BST: 'Europe/London',          // British Summer Time
   WET: 'Europe/Lisbon',          // Western European Time
@@ -420,7 +420,22 @@ function parseInput(text: string): TimeSlot[] {
   const results: TimeSlot[] = []
   for (const line of lines) {
     const trimmed = line.trim()
-    if (trimmed) {
+    if (!trimmed) continue
+
+    // Check for multiple dates joined by "and" / "&" / "+"
+    // e.g. "1/4 and 2/4 from 1730-19 UK"
+    const multiDateMatch = trimmed.match(/\b(\d{1,2}\/\d{1,2})\s*(?:and|&|\+)\s*(\d{1,2}\/\d{1,2})\b/i)
+    if (multiDateMatch) {
+      // Extract the shared time/tz part (everything except the date tokens)
+      const sharedPart = trimmed
+        .replace(multiDateMatch[0], '')  // remove "1/4 and 2/4"
+        .trim()
+      // Parse each date with the shared context
+      for (const dateStr of [multiDateMatch[1], multiDateMatch[2]]) {
+        const syntheticLine = `${dateStr} ${sharedPart}`
+        results.push(...parseLine(syntheticLine))
+      }
+    } else {
       results.push(...parseLine(trimmed))
     }
   }
@@ -725,9 +740,10 @@ function convertSlots(slots: TimeSlot[], targetZones: TZOption[]): ConvertedSlot
     const srcDFmt   = new Intl.DateTimeFormat('en-US', { timeZone: slot.sourceTz, day: 'numeric' })
     const srcMFmt   = new Intl.DateTimeFormat('en-US', { timeZone: slot.sourceTz, month: 'numeric' })
     const srcLabel  = `${srcWdFmt.format(startUTC)} ${srcDFmt.format(startUTC)}/${srcMFmt.format(startUTC)}`
+    const srcAbbr = getTzAbbr(startUTC, slot.sourceTz)
     const fullSlotLabel = slot.isSingleTime
-      ? `${srcLabel} · ${startTime} ${slot.sourceTzAbbr}`
-      : `${srcLabel} · ${startTime}–${endTime} ${slot.sourceTzAbbr}`
+      ? `${srcLabel} · ${startTime} ${srcAbbr}`
+      : `${srcLabel} · ${startTime}–${endTime} ${srcAbbr}`
 
     return { slotLabel: slot.label, fullSlotLabel, cells }
   })
