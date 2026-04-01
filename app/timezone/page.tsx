@@ -218,8 +218,8 @@ interface TimeSlot {
 /** Parse "3:30", "3", "1230", "930" → { h, m } */
 function parseHM(s: string): { h: number; m: number } | null {
   s = s.trim()
-  // colon format: "3:30"
-  const colonParts = s.split(':')
+  // colon or dot format: "3:30" or "3.30"
+  const colonParts = s.split(/[:.]/);
   if (colonParts.length === 2) {
     return { h: parseInt(colonParts[0], 10), m: parseInt(colonParts[1], 10) }
   }
@@ -281,7 +281,8 @@ function parseDate(raw: string): { year: number; month: number; day: number } | 
 function parseTimeRange(raw: string): [number, number, number, number] | null {
   raw = raw.trim()
   // Pattern: (time)(am|pm|a|p)?-(time)(am|pm|a|p)?
-  const m = raw.match(/^(\d{1,4}(?::\d{2})?)\s*(am|pm|a|p)?\s*[-–]\s*(\d{1,4}(?::\d{2})?)\s*(am|pm|a|p)?$/i)
+  // Supports colon or dot as separator: "3:30", "3.30"
+  const m = raw.match(/^(\d{1,4}(?:[:.]\d{2})?)\s*(am|pm|a|p)?\s*[-–]\s*(\d{1,4}(?:[:.]\d{2})?)\s*(am|pm|a|p)?$/i)
   if (!m) return null
 
   const startRaw = m[1]
@@ -378,8 +379,8 @@ function parseLine(line: string): TimeSlot[] {
     const trimmed = part.trim()
     if (!trimmed) continue
     // Find time range pattern, or fall back to single time
-    const trMatch = trimmed.match(/(\d{1,4}(?::\d{2})?\s*(?:am|pm|a|p)?\s*[-–]\s*\d{1,4}(?::\d{2})?\s*(?:am|pm|a|p)?)/i)
-    const singleMatch = !trMatch && trimmed.match(/\b(\d{1,4}(?::\d{2})?\s*(?:am|pm|a|p))\b/i)
+    const trMatch = trimmed.match(/(\d{1,4}(?:[:.]\d{2})?\s*(?:am|pm|a|p)?\s*[-–]\s*\d{1,4}(?:[:.]\d{2})?\s*(?:am|pm|a|p)?)/i)
+    const singleMatch = !trMatch && trimmed.match(/\b(\d{1,4}(?:[:.]\d{2})?\s*(?:am|pm|a|p))\b/i)
     if (!trMatch && !singleMatch) continue
     let parsed: [number, number, number, number] | null = null
     if (trMatch) {
