@@ -27,6 +27,7 @@ function fromFirestoreValue(val: any): any {
   if ('doubleValue' in val) return val.doubleValue
   if ('booleanValue' in val) return val.booleanValue
   if ('nullValue' in val) return null
+  if ('timestampValue' in val) return val.timestampValue
   if ('mapValue' in val) {
     const obj: Record<string, any> = {}
     for (const [k, v] of Object.entries(val.mapValue.fields || {})) {
@@ -49,26 +50,35 @@ export async function GET(req: NextRequest) {
 
     const idToken = await getFirebaseIdToken()
 
-    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/default/documents/tasks`
+    // Use runQuery (structured query) instead of listDocuments — works with Firestore security rules
+    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/default/documents:runQuery`
     const res = await fetch(url, {
-      headers: { 'Authorization': `Bearer ${idToken}` }
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${idToken}`,
+      },
+      body: JSON.stringify({
+        structuredQuery: {
+          from: [{ collectionId: 'tasks' }],
+          orderBy: [{ field: { fieldPath: 'createdAt' }, direction: 'DESCENDING' }],
+          limit: 500,
+        },
+      }),
     })
 
-    if (!res.ok) throw new Error(`Firestore read failed: ${await res.text()}`)
+    if (!res.ok) throw new Error(`Firestore query failed: ${await res.text()}`)
 
-    const data = await res.json()
-    const docs = data.documents || []
-
-    const tasks = docs.map((doc: any) => {
-      const fields: Record<string, any> = {}
-      for (const [k, v] of Object.entries(doc.fields || {})) {
-        fields[k] = fromFirestoreValue(v)
-      }
-      return fields
-    })
-
-    // Sort by createdAt desc
-    tasks.sort((a: any, b: any) => (b.createdAt || '').localeCompare(a.createdAt || ''))
+    const results = await res.json()
+    const tasks = (results as any[])
+      .filter((r: any) => r.document)
+      .map((r: any) => {
+        const fields: Record<string, any> = {}
+        for (const [k, v] of Object.entries(r.document.fields || {})) {
+          fields[k] = fromFirestoreValue(v)
+        }
+        return fields
+      })
 
     return NextResponse.json({ ok: true, tasks })
   } catch (err: any) {
