@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
     const idToken = await getFirebaseIdToken()
 
     // Write to Firestore via REST API
-    const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/tasks/${id}`
+    const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/default/documents/tasks/${id}`
     const fsRes = await fetch(firestoreUrl, {
       method: 'PATCH',
       headers: {
