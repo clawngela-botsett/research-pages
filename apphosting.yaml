@@ -9,3 +9,8 @@ env:
     value: a247516ea75cb52f1b7304055a4615b129fb8b69
     availability:
       - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: juan-tasks-8411c
+    availability:
+      - BUILD
+      - RUNTIME
